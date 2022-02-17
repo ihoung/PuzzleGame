@@ -4,14 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
-#include "InteractiveObject.generated.h"
+#include "InteractiveActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MAGICDETECTIVE_API AInteractiveObject : public AStaticMeshActor
+class MAGICDETECTIVE_API AInteractiveActor : public AStaticMeshActor
 {
 	GENERATED_BODY()
-	
+
+public:
+	AInteractiveActor();
+
+	UFUNCTION()
+	void Interact(AActor &Source);
 };
