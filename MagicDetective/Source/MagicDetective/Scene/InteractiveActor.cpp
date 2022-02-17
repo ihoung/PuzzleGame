@@ -8,7 +8,7 @@ AInteractiveActor::AInteractiveActor()
 
 }
 
-void AInteractiveActor::Interact(AActor &Source)
+void AInteractiveActor::Interact(AActor *Source)
 {
 
 }

@@ -18,5 +18,5 @@ public:
 	AInteractiveActor();
 
 	UFUNCTION()
-	void Interact(AActor &Source);
+	void Interact(AActor *Source);
 };
