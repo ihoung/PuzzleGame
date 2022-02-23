@@ -5,6 +5,9 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+
+#include "MainGameInstance.h"
+#include "UserWidgetManager.h"
 #include "InteractiveActor.h"
 #include "InteractionTipWidget.h"
 
@@ -161,37 +164,27 @@ void AFirstPersonCharacter::DetectHit()
 				currentInteractiveActor = Cast<AInteractiveActor>(hitActor);
 
 				// visualize widget of interaction tip
-				if (interactionTipWidgetInstance == nullptr)
+				UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
+				if (gameInstance)
 				{
-					// Creat a widget instance
-					interactionTipWidgetInstance = CreateWidget<UInteractionTipWidget>(GetWorld(), InteractionTipWidget);
+					gameInstance->GetUIMgr()->Display(EUIType::Hint);
 				}
-				if (interactionTipWidgetInstance && !interactionTipWidgetInstance->IsInViewport())
-				{
-					interactionTipWidgetInstance->AddToViewport(0);
-				}
-			}
-			else
-			{
-				currentInteractiveActor = nullptr;
 
-				// invisualize widget of interaction tip
-				if (interactionTipWidgetInstance)
-				{
-					interactionTipWidgetInstance->RemoveFromViewport();
-				}
+				return;
 			}
 		}
 	}
-	else 
-	{
-		currentInteractiveActor = nullptr;
 
+	if (currentInteractiveActor)
+	{
 		// invisualize widget of interaction tip
-		if (interactionTipWidgetInstance)
+		UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
+		if (gameInstance)
 		{
-			interactionTipWidgetInstance->RemoveFromViewport();
+			gameInstance->GetUIMgr()->Close(EUIType::Hint);
 		}
+
+		currentInteractiveActor = nullptr;
 	}
 }
 

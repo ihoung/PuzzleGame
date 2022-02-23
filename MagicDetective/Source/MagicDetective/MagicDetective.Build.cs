@@ -28,6 +28,9 @@ public class MagicDetective : ModuleRules
 
 	private void AddDirectoriesRecursive(string DirectoryPathToSearch)
 	{
+		PublicIncludePaths.Add(DirectoryPathToSearch);
+		PrivateIncludePaths.Add(DirectoryPathToSearch);
+
 		foreach (string DirectoryPath in Directory.GetDirectories(DirectoryPathToSearch))
 		{
 			PublicIncludePaths.Add(DirectoryPath);
