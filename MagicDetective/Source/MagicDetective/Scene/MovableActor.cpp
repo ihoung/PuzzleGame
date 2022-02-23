@@ -2,6 +2,10 @@
 
 
 #include "MovableActor.h"
+
+#include "MainGameInstance.h"
+#include "UserWidgetManager.h"
+#include "InteractionTipWidget.h"
 #include "FirstPersonCharacter.h"
 
 AMovableActor::AMovableActor() :Super()
@@ -24,6 +28,18 @@ void AMovableActor::Interact(AActor *Source)
 		source->bDetectHit = false;
 		BindInput();
 	}
+
+	// Change display content of hint widget
+	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		hintWidget = Cast<UInteractionTipWidget>(gameInstance->GetUIMgr()->Display(EUIType::InteractionHint));
+		if (hintWidget)
+		{
+			hintWidget->HoldMode();
+		}
+	}
+
 }
 
 void AMovableActor::LongPressedInteract(AActor *Source)
@@ -32,6 +48,28 @@ void AMovableActor::LongPressedInteract(AActor *Source)
 
 	// Collect into pack.	
 	CollectToPack();
+}
+
+void AMovableActor::DisplayInteractionHint()
+{
+	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		hintWidget = Cast<UInteractionTipWidget>(gameInstance->GetUIMgr()->Display(EUIType::InteractionHint, TEXT("Move")));
+		if (hintWidget)
+		{
+			hintWidget->InteractMode();
+		}
+	}
+}
+
+void AMovableActor::CloseInteractionHint()
+{
+	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->GetUIMgr()->Close(EUIType::InteractionHint);
+	}
 }
 
 void AMovableActor::BindInput()
@@ -74,6 +112,8 @@ void AMovableActor::Drop()
 	UnbindInput();
 
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
+
+	CloseInteractionHint();
 }
 
 void AMovableActor::CollectToPack()
@@ -87,5 +127,7 @@ void AMovableActor::CollectToPack()
 	}
 
 	UnbindInput();
+	CloseInteractionHint();
+
 	Destroy();
 }

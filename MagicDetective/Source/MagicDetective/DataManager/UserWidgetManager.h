@@ -12,7 +12,7 @@
 UENUM()
 enum class EUIType : uint8
 {
-	Hint = 0,
+	InteractionHint = 0,
 	Fixed = 10,
 	PopupWindow = 50,
 };
@@ -29,11 +29,12 @@ public:
 	TSubclassOf<class UInteractionTipWidget> InteractionTipWidget;
 
 	UFUNCTION(BlueprintCallable)
-	class UUserWidget *Display(EUIType UIType);
+	class UUserWidget *Display(EUIType UIType, FString desc = "");
 
 	UFUNCTION(BlueprintCallable)
 	void Close(EUIType UIType);
 
 private:
-	class UInteractionTipWidget *hintWidget;
+	class UInteractionTipWidget *interactionHintWidget;
+
 };

@@ -23,7 +23,17 @@ public:
 	UFUNCTION()
 	virtual void LongPressedInteract(AActor *Source) override;
 
+	UFUNCTION()
+	virtual void DisplayInteractionHint() override;
+
+	UFUNCTION()
+	virtual void CloseInteractionHint() override;
+
 private:
+	// hint widget cache
+	UPROPERTY()
+	class UInteractionTipWidget *hintWidget;
+
 	UFUNCTION()
 	void BindInput();
 
@@ -35,4 +45,5 @@ private:
 
 	UFUNCTION()
 	void CollectToPack();
+
 };

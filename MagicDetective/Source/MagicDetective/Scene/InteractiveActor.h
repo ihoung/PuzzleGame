@@ -20,4 +20,8 @@ public:
 	virtual void Interact(AActor *Source);
 
 	virtual void LongPressedInteract(AActor *Source);
+
+	virtual void DisplayInteractionHint();
+
+	virtual void CloseInteractionHint();
 };

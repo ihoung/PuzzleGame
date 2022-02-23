@@ -10,25 +10,26 @@ UUserWidgetManager::UUserWidgetManager()
 
 }
 
-UUserWidget *UUserWidgetManager::Display(EUIType uiType)
+UUserWidget *UUserWidgetManager::Display(EUIType uiType, FString desc)
 {
 	switch (uiType)
 	{
-	case EUIType::Hint:
-		if (hintWidget == nullptr)
+	case EUIType::InteractionHint:
+		if (interactionHintWidget == nullptr)
 		{
-			hintWidget = CreateWidget<UInteractionTipWidget>(GetWorld(), InteractionTipWidget);
-			if (hintWidget == nullptr)
+			interactionHintWidget = CreateWidget<UInteractionTipWidget>(GetWorld(), InteractionTipWidget);
+			if (interactionHintWidget == nullptr)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Creating Hint Widget Failed!"));
 				return nullptr;
 			}
 		}
-		if (!hintWidget->IsInViewport())
+		if (!interactionHintWidget->IsInViewport())
 		{
-			hintWidget->AddToViewport((uint32)EUIType::Hint);
+			interactionHintWidget->SetCenterHintText(desc);
+			interactionHintWidget->AddToViewport((uint32)EUIType::InteractionHint);
 		}
-		return hintWidget;
+		return interactionHintWidget;
 	case EUIType::Fixed:
 		return nullptr;
 	case EUIType::PopupWindow:
@@ -42,10 +43,10 @@ void UUserWidgetManager::Close(EUIType uiType)
 {
 	switch (uiType)
 	{
-	case EUIType::Hint:
-		if (hintWidget && hintWidget->IsInViewport())
+	case EUIType::InteractionHint:
+		if (interactionHintWidget && interactionHintWidget->IsInViewport())
 		{
-			hintWidget->RemoveFromViewport();
+			interactionHintWidget->RemoveFromViewport();
 		}
 		break;
 	case EUIType::Fixed:

@@ -24,3 +24,13 @@ void AInteractiveActor::LongPressedInteract(AActor *Source)
 	//}
 }
 
+void AInteractiveActor::DisplayInteractionHint()
+{
+
+}
+
+void AInteractiveActor::CloseInteractionHint()
+{
+
+}
+

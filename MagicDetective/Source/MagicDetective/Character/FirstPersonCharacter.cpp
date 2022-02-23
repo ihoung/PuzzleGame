@@ -6,10 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 
-#include "MainGameInstance.h"
-#include "UserWidgetManager.h"
 #include "InteractiveActor.h"
-#include "InteractionTipWidget.h"
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
@@ -164,11 +161,7 @@ void AFirstPersonCharacter::DetectHit()
 				currentInteractiveActor = Cast<AInteractiveActor>(hitActor);
 
 				// visualize widget of interaction tip
-				UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-				if (gameInstance)
-				{
-					gameInstance->GetUIMgr()->Display(EUIType::Hint);
-				}
+				currentInteractiveActor->DisplayInteractionHint();
 
 				return;
 			}
@@ -178,12 +171,7 @@ void AFirstPersonCharacter::DetectHit()
 	if (currentInteractiveActor)
 	{
 		// invisualize widget of interaction tip
-		UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-		if (gameInstance)
-		{
-			gameInstance->GetUIMgr()->Close(EUIType::Hint);
-		}
-
+		currentInteractiveActor->CloseInteractionHint();
 		currentInteractiveActor = nullptr;
 	}
 }
