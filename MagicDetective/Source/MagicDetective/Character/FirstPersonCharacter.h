@@ -22,9 +22,6 @@ public:
 	// Sets default values for this character's properties
 	AFirstPersonCharacter();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Interaction")
-	TSubclassOf<class UInteractionTipWidget> InteractionTipWidget;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,9 +56,6 @@ public:
 	bool bDetectHit;
 
 private:
-	UPROPERTY()
-	class UInteractionTipWidget *interactionTipWidgetInstance;
-
 	class AInteractiveActor *currentInteractiveActor;
 
 	void DetectHit();

@@ -7,21 +7,29 @@
 
 UMainGameInstance::UMainGameInstance(const FObjectInitializer &ObjectInitializer) :Super(ObjectInitializer)
 {
-	InitDataMgr();
+
 }
 
 void UMainGameInstance::InitDataMgr()
 {
-	UIMgr = NewObject<UUserWidgetManager>();
+	UIMgr = NewObject<UUserWidgetManager>(this, Blueprint_UIManager);
 	PackMgr = NewObject<UPackManager>();
 }
 
 UUserWidgetManager *UMainGameInstance::GetUIMgr() const
 {
-	return UIMgr;
+	if (UIMgr == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UIManager wasn't initialized!"));
+	}
+	return UIMgr ? UIMgr : NewObject<UUserWidgetManager>();
 }
 
 UPackManager *UMainGameInstance::GetPackMgr() const
 {
-	return PackMgr;
+	if (UIMgr == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PackManager wasn't initialized!"));
+	}
+	return PackMgr ? PackMgr : NewObject<UPackManager>();
 }

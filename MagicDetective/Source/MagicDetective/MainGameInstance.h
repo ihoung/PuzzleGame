@@ -23,11 +23,14 @@ public:
 	UFUNCTION()
 	class UPackManager *GetPackMgr() const;
 
-private:
 	void InitDataMgr();
 
-	//UI Manager
+protected:
 	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UUserWidgetManager> Blueprint_UIManager;
+
+	//UI Manager
+	UPROPERTY()
 	class UUserWidgetManager *UIMgr;
 
 	//Data Manager

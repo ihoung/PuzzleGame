@@ -9,6 +9,14 @@
 /**
  * 
  */
+UENUM()
+enum class EUIType : uint8
+{
+	Hint = 0,
+	Fixed = 10,
+	PopupWindow = 50,
+};
+
 UCLASS(Blueprintable)
 class MAGICDETECTIVE_API UUserWidgetManager : public UObject
 {
@@ -18,5 +26,14 @@ public:
 	UUserWidgetManager();
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<class UUserWidget> interactionWidget;
+	TSubclassOf<class UInteractionTipWidget> InteractionTipWidget;
+
+	UFUNCTION(BlueprintCallable)
+	class UUserWidget *Display(EUIType UIType);
+
+	UFUNCTION(BlueprintCallable)
+	void Close(EUIType UIType);
+
+private:
+	class UInteractionTipWidget *hintWidget;
 };
