@@ -5,12 +5,16 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "MainSceneHUD.h"
-#include "InteractionHintWidget.h"
 #include "FirstPersonCharacter.h"
+#include "TriggerPlacement.h"
 
 AMovableActor::AMovableActor() :Super()
 {
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+	GetStaticMeshComponent()->SetSimulatePhysics(true);
+
+	OnActorBeginOverlap.AddDynamic(this, &AMovableActor::BeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &AMovableActor::EndOverlap);
 }
 
 void AMovableActor::Interact(AActor *Source)
@@ -47,7 +51,7 @@ void AMovableActor::ShowInteractionHint()
 {
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
-	HUD->ShowInteractionHint(EInteractionHintMode::Interact, TEXT("Pick Up"));
+	HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
 }
 
 void AMovableActor::HideInteractionHint()
@@ -55,6 +59,40 @@ void AMovableActor::HideInteractionHint()
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
 	HUD->HideInteractionHint();
+}
+
+void AMovableActor::BeginOverlap(AActor *overlappedActor, AActor *otherActor)
+{
+	if (otherActor && overlappedActor != otherActor)
+	{
+		if (otherActor->IsA(PairedTriggerClass))
+		{
+			DetectedTrigger = Cast<ATriggerPlacement>(otherActor);
+
+			// Interaction hint widget
+			APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+			HUD->ShowInteractionHint(EInteractionHintMode::HoldAndTrigger);
+		}
+	}
+
+}
+
+void AMovableActor::EndOverlap(AActor *overlappedActor, AActor *otherActor)
+{
+	if (otherActor && overlappedActor != otherActor)
+	{
+		if (otherActor->IsA(PairedTriggerClass))
+		{
+			DetectedTrigger = nullptr;
+
+			// Interaction hint widget
+			APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+			HUD->ShowInteractionHint(EInteractionHintMode::Hold);
+		}
+	}
+
 }
 
 void AMovableActor::BindInput()
@@ -70,6 +108,7 @@ void AMovableActor::BindInput()
 	{
 		InputComponent->BindAction("Drop", IE_Pressed, this, &AMovableActor::Drop);
 		InputComponent->BindAction("Collect", IE_Pressed, this, &AMovableActor::CollectToPack);
+		InputComponent->BindAction("Place", IE_Pressed, this, &AMovableActor::Place);
 
 		EnableInput(GetWorld()->GetFirstPlayerController());
 	}
@@ -116,3 +155,22 @@ void AMovableActor::CollectToPack()
 
 	Destroy();
 }
+
+void AMovableActor::Place()
+{
+	if (DetectedTrigger)
+	{
+		AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
+		if (character)
+		{
+			AttachToComponent(DetectedTrigger->GetPlacementComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			character->bDetectHit = true;
+		}
+
+		UnbindInput();
+		HideInteractionHint();
+
+	}
+}
+

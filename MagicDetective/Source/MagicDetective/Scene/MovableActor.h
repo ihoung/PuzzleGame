@@ -29,7 +29,22 @@ public:
 	UFUNCTION()
 	virtual void HideInteractionHint() override;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Display")
+	FString InteractionName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Paired Trigger")
+	TSubclassOf<class ATriggerPlacement> PairedTriggerClass;
+
+	UFUNCTION()
+	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
+
+	UFUNCTION()
+	void EndOverlap(class AActor *overlappedActor, class AActor *otherActor);
+
 private:
+	class ATriggerPlacement *DetectedTrigger;
+
 	UFUNCTION()
 	void BindInput();
 
@@ -41,5 +56,8 @@ private:
 
 	UFUNCTION()
 	void CollectToPack();
+
+	UFUNCTION()
+	void Place();
 
 };

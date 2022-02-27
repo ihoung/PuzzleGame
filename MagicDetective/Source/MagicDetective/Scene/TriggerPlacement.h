@@ -3,15 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/TriggerBase.h"
+#include "Engine/TriggerBox.h"
 #include "TriggerPlacement.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBase
+class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 {
 	GENERATED_BODY()
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Placement", meta = (AllowPrivateAccess = "true"))
+	class USceneComponent *PlacementComponent;
+
+public:
+	ATriggerPlacement();
+
+	UFUNCTION(BlueprintCallable)
+	class USceneComponent *GetPlacementComponent() const;
 };
