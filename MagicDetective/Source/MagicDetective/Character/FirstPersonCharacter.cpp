@@ -7,6 +7,8 @@
 #include "Components/WidgetComponent.h"
 
 #include "InteractiveActor.h"
+#include "InteractionHintWidget.h"
+
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
@@ -161,7 +163,7 @@ void AFirstPersonCharacter::DetectHit()
 				currentInteractiveActor = Cast<AInteractiveActor>(hitActor);
 
 				// visualize widget of interaction tip
-				currentInteractiveActor->DisplayInteractionHint();
+				currentInteractiveActor->ShowInteractionHint();
 
 				return;
 			}
@@ -171,7 +173,7 @@ void AFirstPersonCharacter::DetectHit()
 	if (currentInteractiveActor)
 	{
 		// invisualize widget of interaction tip
-		currentInteractiveActor->CloseInteractionHint();
+		currentInteractiveActor->HideInteractionHint();
 		currentInteractiveActor = nullptr;
 	}
 }

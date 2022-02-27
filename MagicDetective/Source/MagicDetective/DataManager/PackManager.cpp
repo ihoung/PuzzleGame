@@ -3,3 +3,11 @@
 
 #include "PackManager.h"
 
+void UPackManager::Initialize(FSubsystemCollectionBase &Collection)
+{
+	Super::Initialize(Collection);
+}
+
+void UPackManager::Deinitialize()
+{
+}

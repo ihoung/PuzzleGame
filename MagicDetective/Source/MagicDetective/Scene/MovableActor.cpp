@@ -2,10 +2,10 @@
 
 
 #include "MovableActor.h"
+#include "Kismet/GameplayStatics.h"
 
-#include "MainGameInstance.h"
-#include "UserWidgetManager.h"
-#include "InteractionTipWidget.h"
+#include "MainSceneHUD.h"
+#include "InteractionHintWidget.h"
 #include "FirstPersonCharacter.h"
 
 AMovableActor::AMovableActor() :Super()
@@ -30,16 +30,9 @@ void AMovableActor::Interact(AActor *Source)
 	}
 
 	// Change display content of hint widget
-	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	if (gameInstance)
-	{
-		hintWidget = Cast<UInteractionTipWidget>(gameInstance->GetUIMgr()->Display(EUIType::InteractionHint));
-		if (hintWidget)
-		{
-			hintWidget->HoldMode();
-		}
-	}
-
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
 void AMovableActor::LongPressedInteract(AActor *Source)
@@ -50,26 +43,18 @@ void AMovableActor::LongPressedInteract(AActor *Source)
 	CollectToPack();
 }
 
-void AMovableActor::DisplayInteractionHint()
+void AMovableActor::ShowInteractionHint()
 {
-	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	if (gameInstance)
-	{
-		hintWidget = Cast<UInteractionTipWidget>(gameInstance->GetUIMgr()->Display(EUIType::InteractionHint, TEXT("Move")));
-		if (hintWidget)
-		{
-			hintWidget->InteractMode();
-		}
-	}
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->ShowInteractionHint(EInteractionHintMode::Interact, TEXT("Pick Up"));
 }
 
-void AMovableActor::CloseInteractionHint()
+void AMovableActor::HideInteractionHint()
 {
-	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	if (gameInstance)
-	{
-		gameInstance->GetUIMgr()->Close(EUIType::InteractionHint);
-	}
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->HideInteractionHint();
 }
 
 void AMovableActor::BindInput()
@@ -113,7 +98,7 @@ void AMovableActor::Drop()
 
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
 
-	CloseInteractionHint();
+	HideInteractionHint();
 }
 
 void AMovableActor::CollectToPack()
@@ -127,7 +112,7 @@ void AMovableActor::CollectToPack()
 	}
 
 	UnbindInput();
-	CloseInteractionHint();
+	HideInteractionHint();
 
 	Destroy();
 }

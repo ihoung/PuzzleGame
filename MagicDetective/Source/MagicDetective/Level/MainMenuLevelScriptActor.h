@@ -14,10 +14,7 @@ class MAGICDETECTIVE_API AMainMenuLevelScriptActor : public ALevelScriptActor
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, Category = Widget)
-	TSubclassOf<class UUserWidget> Widget;
-
 protected:
 	virtual void BeginPlay() override;
+
 };

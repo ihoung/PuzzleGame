@@ -24,16 +24,12 @@ public:
 	virtual void LongPressedInteract(AActor *Source) override;
 
 	UFUNCTION()
-	virtual void DisplayInteractionHint() override;
+	virtual void ShowInteractionHint() override;
 
 	UFUNCTION()
-	virtual void CloseInteractionHint() override;
+	virtual void HideInteractionHint() override;
 
 private:
-	// hint widget cache
-	UPROPERTY()
-	class UInteractionTipWidget *hintWidget;
-
 	UFUNCTION()
 	void BindInput();
 

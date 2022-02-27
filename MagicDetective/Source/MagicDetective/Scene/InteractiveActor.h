@@ -21,7 +21,7 @@ public:
 
 	virtual void LongPressedInteract(AActor *Source);
 
-	virtual void DisplayInteractionHint();
+	virtual void ShowInteractionHint();
 
-	virtual void CloseInteractionHint();
+	virtual void HideInteractionHint();
 };

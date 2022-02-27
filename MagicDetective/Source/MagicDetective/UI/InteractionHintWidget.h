@@ -4,45 +4,52 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InteractionTipWidget.generated.h"
+#include "InteractionHintWidget.generated.h"
 
 /**
  * 
  */
+
+UENUM()
+enum class EInteractionHintMode : uint8
+{
+	Interact,
+	Hold,
+	HoldAndTrigger
+};
+
 UCLASS()
-class MAGICDETECTIVE_API UInteractionTipWidget : public UUserWidget
+class MAGICDETECTIVE_API UInteractionHintWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 protected:
 	virtual bool Initialize() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox *HorizontalBox_InteractionHint;
+		class UHorizontalBox *HorizontalBox_InteractionHint;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock *TextBlock_CenterHint;
+		class UTextBlock *TextBlock_InteractionHint;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock *TextBlock_DropHint;
+		class UTextBlock *TextBlock_DropHint;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock *TextBlock_CollectHint;
+		class UTextBlock *TextBlock_CollectHint;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock *TextBlock_PlaceHint;
-	
+		class UTextBlock *TextBlock_PlaceHint;
+
 public:
 	UFUNCTION()
-	void SetCenterHintText(FString text);
-
-	UFUNCTION()
-	void InteractMode();
+	void InteractMode(FString info);
 
 	UFUNCTION()
 	void HoldMode();
 
 	UFUNCTION()
 	void HoldAndTriggerMode();
+
 };
