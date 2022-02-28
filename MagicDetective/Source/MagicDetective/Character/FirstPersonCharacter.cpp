@@ -7,7 +7,8 @@
 #include "Components/WidgetComponent.h"
 
 #include "InteractiveActor.h"
-#include "InteractionHintWidget.h"
+#include "MovableActor.h"
+#include "TriggerPlacement.h"
 
 
 // Sets default values
@@ -30,7 +31,7 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	InteractionDistance = 100.f;
 	LongPressedTime = 2.0f;
 	
-	bDetectHit = true;
+	bCanDetectHit = true;
 
 	isInteractionKeyPressed = false;
 	interactionKeyPressedTime = 0.0f;
@@ -48,7 +49,7 @@ void AFirstPersonCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bDetectHit)
+	if (bCanDetectHit)
 	{
 		DetectHit();
 	}
@@ -93,11 +94,6 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AFirstPersonCharacter::InteractionKeyPressed);
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &AFirstPersonCharacter::InteractionKeyReleased);
 
-}
-
-USceneComponent *AFirstPersonCharacter::GetObjectHolder() const
-{
-	return ObjectHolder;
 }
 
 void AFirstPersonCharacter::MoveForward(float Value)
@@ -167,6 +163,13 @@ void AFirstPersonCharacter::DetectHit()
 
 				return;
 			}
+			else if (hitActor->IsA(ATriggerPlacement::StaticClass()))
+			{
+				currentTrigger = Cast<ATriggerPlacement>(hitActor);
+				currentTrigger->ShowInteractionHint();
+
+				return;
+			}
 		}
 	}
 
@@ -176,13 +179,25 @@ void AFirstPersonCharacter::DetectHit()
 		currentInteractiveActor->HideInteractionHint();
 		currentInteractiveActor = nullptr;
 	}
+	else if (currentTrigger)
+	{
+		currentTrigger->HideInteractionHint();
+		currentTrigger = nullptr;
+	}
 }
 
 void AFirstPersonCharacter::Interact()
 {
 	if (currentInteractiveActor != nullptr)
 	{
-		currentInteractiveActor->Interact(this);
+		AMovableActor *targetActor = Cast<AMovableActor>(currentInteractiveActor);
+		if (targetActor)
+		{
+			targetActor->AttachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::AttachMovableActor);
+			targetActor->DetachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::DetachMovableActor);
+		}
+
+		currentInteractiveActor->Interact();
 	}
 }
 
@@ -190,8 +205,23 @@ void AFirstPersonCharacter::LongPressedInteract()
 {
 	if (currentInteractiveActor != nullptr)
 	{
-		currentInteractiveActor->LongPressedInteract(this);
+		currentInteractiveActor->LongPressedInteract();
 	}
+}
+
+void AFirstPersonCharacter::AttachMovableActor(AMovableActor *TargetActor)
+{
+	TargetActor->AttachToComponent(ObjectHolder, FAttachmentTransformRules::KeepWorldTransform);
+	bCanDetectHit = false;
+}
+
+void AFirstPersonCharacter::DetachMovableActor(AMovableActor *TargetActor)
+{
+	TargetActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	bCanDetectHit = true;
+
+	TargetActor->AttachToCharacterDelegate.Unbind();
+	TargetActor->DetachToCharacterDelegate.Unbind();
 }
 
 

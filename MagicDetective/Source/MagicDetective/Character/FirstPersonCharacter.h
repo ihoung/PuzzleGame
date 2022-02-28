@@ -33,8 +33,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	USceneComponent *GetObjectHolder() const;
-
 protected:
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -53,14 +51,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float LongPressedTime;
 
-	bool bDetectHit;
 
 private:
 	class AInteractiveActor *currentInteractiveActor;
 
+	class ATriggerPlacement *currentTrigger;
+
+	bool bCanDetectHit;
+
 	void DetectHit();
 
-	// Interaction Input Start
+	/* Interaction Input Start */
 	// Record key is pressed when detecting interactive object.
 	bool isInteractionKeyPressed;
 
@@ -72,6 +73,10 @@ private:
 
 	// Long pressed interact with target Actor
 	void LongPressedInteract();
-	// Interaction Inpu End
+	/* Interaction Input End */
+
+	void AttachMovableActor(class AMovableActor *TargetActor);
+
+	void DetachMovableActor(class AMovableActor *TargetActor);
 
 };

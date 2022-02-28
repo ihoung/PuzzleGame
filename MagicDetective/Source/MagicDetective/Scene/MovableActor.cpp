@@ -5,33 +5,26 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "MainSceneHUD.h"
-#include "FirstPersonCharacter.h"
-#include "TriggerPlacement.h"
+
 
 AMovableActor::AMovableActor() :Super()
 {
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
 
-	OnActorBeginOverlap.AddDynamic(this, &AMovableActor::BeginOverlap);
-	OnActorEndOverlap.AddDynamic(this, &AMovableActor::EndOverlap);
+	bDetectTrigger = false;
 }
 
-void AMovableActor::Interact(AActor *Source)
+void AMovableActor::Interact()
 {
-	Super::Interact(Source);
+	Super::Interact();
 
 	// Pick up and hold this object.
 	GetStaticMeshComponent()->SetSimulatePhysics(false);
 
-	AFirstPersonCharacter *source = Cast<AFirstPersonCharacter>(Source);
-	if (source != nullptr)
-	{
-		AttachToComponent(source->GetObjectHolder(), FAttachmentTransformRules::KeepWorldTransform);
+	AttachToCharacterDelegate.ExecuteIfBound(this);
 
-		source->bDetectHit = false;
-		BindInput();
-	}
+	BindInput();
 
 	// Change display content of hint widget
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -39,9 +32,9 @@ void AMovableActor::Interact(AActor *Source)
 	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
-void AMovableActor::LongPressedInteract(AActor *Source)
+void AMovableActor::LongPressedInteract()
 {
-	Super::LongPressedInteract(Source);
+	Super::LongPressedInteract();
 
 	// Collect into pack.	
 	CollectToPack();
@@ -59,40 +52,6 @@ void AMovableActor::HideInteractionHint()
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
 	HUD->HideInteractionHint();
-}
-
-void AMovableActor::BeginOverlap(AActor *overlappedActor, AActor *otherActor)
-{
-	if (otherActor && overlappedActor != otherActor)
-	{
-		if (otherActor->IsA(PairedTriggerClass))
-		{
-			DetectedTrigger = Cast<ATriggerPlacement>(otherActor);
-
-			// Interaction hint widget
-			APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-			AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
-			HUD->ShowInteractionHint(EInteractionHintMode::HoldAndTrigger);
-		}
-	}
-
-}
-
-void AMovableActor::EndOverlap(AActor *overlappedActor, AActor *otherActor)
-{
-	if (otherActor && overlappedActor != otherActor)
-	{
-		if (otherActor->IsA(PairedTriggerClass))
-		{
-			DetectedTrigger = nullptr;
-
-			// Interaction hint widget
-			APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-			AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
-			HUD->ShowInteractionHint(EInteractionHintMode::Hold);
-		}
-	}
-
 }
 
 void AMovableActor::BindInput()
@@ -125,13 +84,7 @@ void AMovableActor::UnbindInput()
 
 void AMovableActor::Drop()
 {
-	AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
-	if (character)
-	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
-		character->bDetectHit = true;
-	}
+	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
 
@@ -142,13 +95,7 @@ void AMovableActor::Drop()
 
 void AMovableActor::CollectToPack()
 {
-	AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
-	if(character)
-	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
-		character->bDetectHit = true;
-	}
+	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
 	HideInteractionHint();
@@ -158,19 +105,14 @@ void AMovableActor::CollectToPack()
 
 void AMovableActor::Place()
 {
-	if (DetectedTrigger)
+	if (bDetectTrigger)
 	{
-		AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
-		if (character)
-		{
-			AttachToComponent(DetectedTrigger->GetPlacementComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		PlaceDelegate.ExecuteIfBound(this);
 
-			character->bDetectHit = true;
-		}
+		DetachToCharacterDelegate.ExecuteIfBound(this);
 
 		UnbindInput();
 		HideInteractionHint();
-
 	}
 }
 

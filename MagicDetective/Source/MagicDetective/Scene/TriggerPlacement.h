@@ -20,6 +20,27 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 public:
 	ATriggerPlacement();
 
-	UFUNCTION(BlueprintCallable)
-	class USceneComponent *GetPlacementComponent() const;
+	UFUNCTION()
+	virtual void ShowInteractionHint();
+
+	UFUNCTION()
+	virtual void HideInteractionHint();
+
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	FString InteractionName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Paired Actor")
+	TSubclassOf<class AMovableActor> PairedActorClass;
+
+	UFUNCTION()
+	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
+
+	UFUNCTION()
+	void EndOverlap(class AActor *overlappedActor, class AActor *otherActor);
+
+private:
+	UFUNCTION()
+	void PlaceMovableActor(class AMovableActor *TargetActor);
 };

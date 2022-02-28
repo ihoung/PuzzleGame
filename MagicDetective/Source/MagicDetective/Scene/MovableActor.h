@@ -9,6 +9,10 @@
 /**
  * 
  */
+DECLARE_DELEGATE_OneParam(FPlaceMovableActorDelegate, AMovableActor*)
+DECLARE_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableActor*)
+DECLARE_DELEGATE_OneParam(FDetachToCharacterDelegate, AMovableActor*)
+
 UCLASS()
 class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
 {
@@ -18,10 +22,10 @@ public:
 	AMovableActor();
 
 	UFUNCTION()
-	virtual void Interact(AActor *Source) override;
+	virtual void Interact() override;
 
 	UFUNCTION()
-	virtual void LongPressedInteract(AActor *Source) override;
+	virtual void LongPressedInteract() override;
 
 	UFUNCTION()
 	virtual void ShowInteractionHint() override;
@@ -29,22 +33,17 @@ public:
 	UFUNCTION()
 	virtual void HideInteractionHint() override;
 
+	bool bDetectTrigger;
+
+	FPlaceMovableActorDelegate PlaceDelegate;
+	FAttachToCharacterDelegate AttachToCharacterDelegate;
+	FDetachToCharacterDelegate DetachToCharacterDelegate;
+
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Display")
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	FString InteractionName;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Paired Trigger")
-	TSubclassOf<class ATriggerPlacement> PairedTriggerClass;
-
-	UFUNCTION()
-	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
-
-	UFUNCTION()
-	void EndOverlap(class AActor *overlappedActor, class AActor *otherActor);
-
 private:
-	class ATriggerPlacement *DetectedTrigger;
-
 	UFUNCTION()
 	void BindInput();
 

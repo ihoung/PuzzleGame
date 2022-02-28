@@ -17,9 +17,9 @@ class MAGICDETECTIVE_API AInteractiveActor : public AStaticMeshActor
 public:
 	AInteractiveActor();
 
-	virtual void Interact(AActor *Source);
+	virtual void Interact();
 
-	virtual void LongPressedInteract(AActor *Source);
+	virtual void LongPressedInteract();
 
 	virtual void ShowInteractionHint();
 
