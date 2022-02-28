@@ -140,11 +140,11 @@ void AFirstPersonCharacter::DetectHit()
 	FVector forwardVector = FirstPersonCameraComponent->GetForwardVector();
 	FVector endLocation = startLocation + forwardVector * InteractionDistance;
 
-	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex = false;
-	collisionParams.bReturnPhysicalMaterial = false;
+	FCollisionQueryParams collisionQueryParams;
+	collisionQueryParams.bTraceComplex = false;
+	collisionQueryParams.bReturnPhysicalMaterial = false;
 
-	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECC_Visibility, collisionQueryParams))
 	{
 		if (outHit.bBlockingHit)
 		{
