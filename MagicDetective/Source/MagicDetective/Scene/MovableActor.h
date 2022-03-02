@@ -9,6 +9,10 @@
 /**
  * 
  */
+DECLARE_DELEGATE_OneParam(FPlaceMovableActorDelegate, AMovableActor*)
+DECLARE_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableActor*)
+DECLARE_DELEGATE_OneParam(FDetachToCharacterDelegate, AMovableActor*)
+
 UCLASS()
 class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
 {
@@ -18,10 +22,26 @@ public:
 	AMovableActor();
 
 	UFUNCTION()
-	virtual void Interact(AActor *Source) override;
+	virtual void Interact() override;
 
 	UFUNCTION()
-	virtual void LongPressedInteract(AActor *Source) override;
+	virtual void LongPressedInteract() override;
+
+	UFUNCTION()
+	virtual void ShowInteractionHint() override;
+
+	UFUNCTION()
+	virtual void HideInteractionHint() override;
+
+	bool bDetectTrigger;
+
+	FPlaceMovableActorDelegate PlaceDelegate;
+	FAttachToCharacterDelegate AttachToCharacterDelegate;
+	FDetachToCharacterDelegate DetachToCharacterDelegate;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	FString InteractionName;
 
 private:
 	UFUNCTION()
@@ -35,4 +55,8 @@ private:
 
 	UFUNCTION()
 	void CollectToPack();
+
+	UFUNCTION()
+	void Place();
+
 };

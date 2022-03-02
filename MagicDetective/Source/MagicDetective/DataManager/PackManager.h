@@ -10,8 +10,13 @@
  * 
  */
 UCLASS()
-class MAGICDETECTIVE_API UPackManager : public UObject
+class MAGICDETECTIVE_API UPackManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
+public:
+	// Begin USubsystem
+	virtual void Initialize(FSubsystemCollectionBase &Collection) override;
+	virtual void Deinitialize() override;
+	// End USubsystem
 };

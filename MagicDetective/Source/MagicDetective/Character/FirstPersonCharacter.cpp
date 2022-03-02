@@ -6,10 +6,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 
-#include "MainGameInstance.h"
-#include "UserWidgetManager.h"
 #include "InteractiveActor.h"
-#include "InteractionTipWidget.h"
+#include "MovableActor.h"
+#include "TriggerPlacement.h"
+
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
@@ -31,7 +31,7 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	InteractionDistance = 100.f;
 	LongPressedTime = 2.0f;
 	
-	bDetectHit = true;
+	bCanDetectHit = true;
 
 	isInteractionKeyPressed = false;
 	interactionKeyPressedTime = 0.0f;
@@ -49,7 +49,7 @@ void AFirstPersonCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bDetectHit)
+	if (bCanDetectHit)
 	{
 		DetectHit();
 	}
@@ -96,11 +96,6 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 }
 
-USceneComponent *AFirstPersonCharacter::GetObjectHolder() const
-{
-	return ObjectHolder;
-}
-
 void AFirstPersonCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -145,11 +140,11 @@ void AFirstPersonCharacter::DetectHit()
 	FVector forwardVector = FirstPersonCameraComponent->GetForwardVector();
 	FVector endLocation = startLocation + forwardVector * InteractionDistance;
 
-	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex = false;
-	collisionParams.bReturnPhysicalMaterial = false;
+	FCollisionQueryParams collisionQueryParams;
+	collisionQueryParams.bTraceComplex = false;
+	collisionQueryParams.bReturnPhysicalMaterial = false;
 
-	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECC_Visibility, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECC_Visibility, collisionQueryParams))
 	{
 		if (outHit.bBlockingHit)
 		{
@@ -164,11 +159,14 @@ void AFirstPersonCharacter::DetectHit()
 				currentInteractiveActor = Cast<AInteractiveActor>(hitActor);
 
 				// visualize widget of interaction tip
-				UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-				if (gameInstance)
-				{
-					gameInstance->GetUIMgr()->Display(EUIType::Hint);
-				}
+				currentInteractiveActor->ShowInteractionHint();
+
+				return;
+			}
+			else if (hitActor->IsA(ATriggerPlacement::StaticClass()))
+			{
+				currentTrigger = Cast<ATriggerPlacement>(hitActor);
+				currentTrigger->ShowInteractionHint();
 
 				return;
 			}
@@ -178,13 +176,13 @@ void AFirstPersonCharacter::DetectHit()
 	if (currentInteractiveActor)
 	{
 		// invisualize widget of interaction tip
-		UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-		if (gameInstance)
-		{
-			gameInstance->GetUIMgr()->Close(EUIType::Hint);
-		}
-
+		currentInteractiveActor->HideInteractionHint();
 		currentInteractiveActor = nullptr;
+	}
+	else if (currentTrigger)
+	{
+		currentTrigger->HideInteractionHint();
+		currentTrigger = nullptr;
 	}
 }
 
@@ -192,7 +190,14 @@ void AFirstPersonCharacter::Interact()
 {
 	if (currentInteractiveActor != nullptr)
 	{
-		currentInteractiveActor->Interact(this);
+		AMovableActor *targetActor = Cast<AMovableActor>(currentInteractiveActor);
+		if (targetActor)
+		{
+			targetActor->AttachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::AttachMovableActor);
+			targetActor->DetachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::DetachMovableActor);
+		}
+
+		currentInteractiveActor->Interact();
 	}
 }
 
@@ -200,8 +205,23 @@ void AFirstPersonCharacter::LongPressedInteract()
 {
 	if (currentInteractiveActor != nullptr)
 	{
-		currentInteractiveActor->LongPressedInteract(this);
+		currentInteractiveActor->LongPressedInteract();
 	}
+}
+
+void AFirstPersonCharacter::AttachMovableActor(AMovableActor *TargetActor)
+{
+	TargetActor->AttachToComponent(ObjectHolder, FAttachmentTransformRules::KeepWorldTransform);
+	bCanDetectHit = false;
+}
+
+void AFirstPersonCharacter::DetachMovableActor(AMovableActor *TargetActor)
+{
+	TargetActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	bCanDetectHit = true;
+
+	TargetActor->AttachToCharacterDelegate.Unbind();
+	TargetActor->DetachToCharacterDelegate.Unbind();
 }
 
 

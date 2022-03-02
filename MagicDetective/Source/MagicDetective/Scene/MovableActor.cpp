@@ -2,36 +2,56 @@
 
 
 #include "MovableActor.h"
-#include "FirstPersonCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "MainSceneHUD.h"
+
 
 AMovableActor::AMovableActor() :Super()
 {
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+	GetStaticMeshComponent()->SetSimulatePhysics(true);
+
+	bDetectTrigger = false;
 }
 
-void AMovableActor::Interact(AActor *Source)
+void AMovableActor::Interact()
 {
-	Super::Interact(Source);
+	Super::Interact();
 
 	// Pick up and hold this object.
 	GetStaticMeshComponent()->SetSimulatePhysics(false);
 
-	AFirstPersonCharacter *source = Cast<AFirstPersonCharacter>(Source);
-	if (source != nullptr)
-	{
-		AttachToComponent(source->GetObjectHolder(), FAttachmentTransformRules::KeepWorldTransform);
+	AttachToCharacterDelegate.ExecuteIfBound(this);
 
-		source->bDetectHit = false;
-		BindInput();
-	}
+	BindInput();
+
+	// Change display content of hint widget
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
-void AMovableActor::LongPressedInteract(AActor *Source)
+void AMovableActor::LongPressedInteract()
 {
-	Super::LongPressedInteract(Source);
+	Super::LongPressedInteract();
 
 	// Collect into pack.	
 	CollectToPack();
+}
+
+void AMovableActor::ShowInteractionHint()
+{
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
+}
+
+void AMovableActor::HideInteractionHint()
+{
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+	HUD->HideInteractionHint();
 }
 
 void AMovableActor::BindInput()
@@ -47,6 +67,7 @@ void AMovableActor::BindInput()
 	{
 		InputComponent->BindAction("Drop", IE_Pressed, this, &AMovableActor::Drop);
 		InputComponent->BindAction("Collect", IE_Pressed, this, &AMovableActor::CollectToPack);
+		InputComponent->BindAction("Place", IE_Pressed, this, &AMovableActor::Place);
 
 		EnableInput(GetWorld()->GetFirstPlayerController());
 	}
@@ -63,29 +84,35 @@ void AMovableActor::UnbindInput()
 
 void AMovableActor::Drop()
 {
-	AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
-	if (character)
-	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
-		character->bDetectHit = true;
-	}
+	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
 
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
+
+	HideInteractionHint();
 }
 
 void AMovableActor::CollectToPack()
 {
-	AFirstPersonCharacter *character = Cast<AFirstPersonCharacter>(GetAttachParentActor());
-	if(character)
-	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
-		character->bDetectHit = true;
-	}
+	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
+	HideInteractionHint();
+
 	Destroy();
 }
+
+void AMovableActor::Place()
+{
+	if (bDetectTrigger)
+	{
+		PlaceDelegate.ExecuteIfBound(this);
+
+		DetachToCharacterDelegate.ExecuteIfBound(this);
+
+		UnbindInput();
+		HideInteractionHint();
+	}
+}
+

@@ -2,13 +2,10 @@
 
 
 #include "MainSceneLevelScriptActor.h"
-#include "MainGameInstance.h"
+
+#include "PackManager.h"
 
 void AMainSceneLevelScriptActor::BeginPlay()
 {
-	UMainGameInstance *gameInstance = Cast<UMainGameInstance>(GetGameInstance());
-	if (gameInstance)
-	{
-		gameInstance->InitDataMgr();
-	}
+
 }

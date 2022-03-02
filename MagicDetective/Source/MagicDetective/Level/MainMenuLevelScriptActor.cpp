@@ -3,12 +3,13 @@
 
 #include "MainMenuLevelScriptActor.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "MainMenuHUD.h"
 
 void AMainMenuLevelScriptActor::BeginPlay()
 {
-	UUserWidget *widget = CreateWidget<UUserWidget>(GetWorld(), Widget);
-	if (widget)
-	{
-		widget->AddToViewport(0);
-	}
+	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AMainMenuHUD *HUD = PC->GetHUD<AMainMenuHUD>();
+	HUD->ShowMainMenu();
 }

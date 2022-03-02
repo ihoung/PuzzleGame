@@ -16,4 +16,5 @@ class MAGICDETECTIVE_API AMainSceneLevelScriptActor : public ALevelScriptActor
 	
 protected:
 	virtual void BeginPlay() override;
+
 };

@@ -8,7 +8,7 @@ AInteractiveActor::AInteractiveActor()
 
 }
 
-void AInteractiveActor::Interact(AActor *Source)
+void AInteractiveActor::Interact()
 {
 	//if (GEngine)
 	//{
@@ -16,11 +16,21 @@ void AInteractiveActor::Interact(AActor *Source)
 	//}
 }
 
-void AInteractiveActor::LongPressedInteract(AActor *Source)
+void AInteractiveActor::LongPressedInteract()
 {
 	//if (GEngine)
 	//{
 	//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Long Pressed Interact: %s"));
 	//}
+}
+
+void AInteractiveActor::ShowInteractionHint()
+{
+
+}
+
+void AInteractiveActor::HideInteractionHint()
+{
+
 }
 
