@@ -10,13 +10,16 @@
  * 
  */
 DECLARE_DELEGATE_OneParam(FPlaceMovableActorDelegate, AMovableActor*)
-DECLARE_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableActor*)
+DECLARE_MULTICAST_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableActor*)
 DECLARE_DELEGATE_OneParam(FDetachToCharacterDelegate, AMovableActor*)
 
 UCLASS()
 class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PropertyInformation", meta = (AllowPrivateAccess = true))
+	FName DataID;
 	
 public:
 	AMovableActor();

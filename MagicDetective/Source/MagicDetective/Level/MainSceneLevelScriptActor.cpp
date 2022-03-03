@@ -2,10 +2,13 @@
 
 
 #include "MainSceneLevelScriptActor.h"
+#include "Engine/DataTable.h"
 
-#include "PackManager.h"
+#include "DataTableManager.h"
+
 
 void AMainSceneLevelScriptActor::BeginPlay()
 {
-
+	// Initialize Data Tables
+	GetGameInstance()->GetSubsystem<UDataTableManager>()->InitializeData(EDataTableType::GameplayProperty, GameplayPropertyDataTable);
 }

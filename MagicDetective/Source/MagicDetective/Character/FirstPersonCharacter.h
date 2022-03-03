@@ -79,4 +79,5 @@ private:
 
 	void DetachMovableActor(class AMovableActor *TargetActor);
 
+	FDelegateHandle DetachDelegateHandle;
 };

@@ -17,6 +17,8 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Placement", meta = (AllowPrivateAccess = "true"))
 	class USceneComponent *PlacementComponent;
 
+	bool bIsChildAttached;
+
 public:
 	ATriggerPlacement();
 
@@ -26,6 +28,11 @@ public:
 	UFUNCTION()
 	virtual void HideInteractionHint();
 
+	UFUNCTION()
+	void PlaceFromPack();
+
+	UFUNCTION()
+	bool HasChildActorAttached() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
@@ -43,4 +50,9 @@ protected:
 private:
 	UFUNCTION()
 	void PlaceMovableActor(class AMovableActor *TargetActor);
+
+	UFUNCTION()
+	void DetachMovableActor(class AMovableActor *TargetActor);
+
+	FDelegateHandle DetachDelegateHandle;
 };

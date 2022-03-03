@@ -67,6 +67,10 @@ void AFirstPersonCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+	else if (currentTrigger != nullptr)
+	{
+
+	}
 	else
 	{
 		isInteractionKeyPressed = false;
@@ -116,16 +120,20 @@ void AFirstPersonCharacter::MoveRight(float Value)
 
 void AFirstPersonCharacter::InteractionKeyPressed()
 {
-	if (!isInteractionKeyPressed && currentInteractiveActor != nullptr)
+	if (!isInteractionKeyPressed)
 	{
 		isInteractionKeyPressed = true;
-		interactionKeyPressedTime = 0.f;
+
+		if (currentInteractiveActor != nullptr)
+		{
+			interactionKeyPressedTime = 0.f;
+		}
 	}
 }
 
 void AFirstPersonCharacter::InteractionKeyReleased()
 {
-	if (isInteractionKeyPressed && currentInteractiveActor != nullptr)
+	if (isInteractionKeyPressed && (currentInteractiveActor != nullptr || currentTrigger != nullptr))
 	{
 		Interact();
 	}
@@ -165,8 +173,12 @@ void AFirstPersonCharacter::DetectHit()
 			}
 			else if (hitActor->IsA(ATriggerPlacement::StaticClass()))
 			{
-				currentTrigger = Cast<ATriggerPlacement>(hitActor);
-				currentTrigger->ShowInteractionHint();
+				ATriggerPlacement *TriggerPlacement = Cast<ATriggerPlacement>(hitActor);
+				if (!TriggerPlacement->HasChildActorAttached())
+				{
+					currentTrigger = TriggerPlacement;
+					currentTrigger->ShowInteractionHint();
+				}
 
 				return;
 			}
@@ -193,11 +205,15 @@ void AFirstPersonCharacter::Interact()
 		AMovableActor *targetActor = Cast<AMovableActor>(currentInteractiveActor);
 		if (targetActor)
 		{
-			targetActor->AttachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::AttachMovableActor);
+			DetachDelegateHandle = targetActor->AttachToCharacterDelegate.AddUObject(this, &AFirstPersonCharacter::AttachMovableActor);
 			targetActor->DetachToCharacterDelegate.BindUObject(this, &AFirstPersonCharacter::DetachMovableActor);
 		}
 
 		currentInteractiveActor->Interact();
+	}
+	else if (currentTrigger != nullptr)
+	{
+		currentTrigger->PlaceFromPack();
 	}
 }
 
@@ -220,7 +236,7 @@ void AFirstPersonCharacter::DetachMovableActor(AMovableActor *TargetActor)
 	TargetActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	bCanDetectHit = true;
 
-	TargetActor->AttachToCharacterDelegate.Unbind();
+	TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
 	TargetActor->DetachToCharacterDelegate.Unbind();
 }
 
