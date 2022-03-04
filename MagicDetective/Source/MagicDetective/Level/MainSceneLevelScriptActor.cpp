@@ -11,4 +11,5 @@ void AMainSceneLevelScriptActor::BeginPlay()
 {
 	// Initialize Data Tables
 	GetGameInstance()->GetSubsystem<UDataTableManager>()->InitializeData(EDataTableType::GameplayProperty, GameplayPropertyDataTable);
+	GetGameInstance()->GetSubsystem<UDataTableManager>()->InitializeData(EDataTableType::Caption, CaptionDataTable);
 }

@@ -21,20 +21,33 @@ protected:
 	TMap<TSubclassOf<class UUserWidget>, int32> WidgetZOrder;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UInteractionHintWidget> InteractionHintClass;
+	TSubclassOf<class UInteractionHintWidget> InteractionHintWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCaptionWidget> CaptionWidget;
 
 private:
 	// Keep a pointer to be able to hide it
 	UPROPERTY()
 	class UInteractionHintWidget *InteractionHint;
 
+	UPROPERTY()
+	class UCaptionWidget *Caption;
+
 	TArray<class UUserWidget *> PageStack;
 
 public:
+	// Methods of Interaction Hint Widget
 	UFUNCTION(BlueprintCallable)
 	void ShowInteractionHint(enum EInteractionHintMode Mode, FString info = "");
 
 	UFUNCTION(BlueprintCallable)
 	void HideInteractionHint();
 
+	// Methods of Caption Widget
+	UFUNCTION(BlueprintCallable)
+	void ShowCaption(const FString &TextContent = "", bool IsForcedToFinish = false);
+
+	UFUNCTION(BlueprintCallable)
+	void HideCaption();
 };

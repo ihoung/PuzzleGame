@@ -31,6 +31,16 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FCaptionData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FString TextContent;
+};
+
 UCLASS()
 class MAGICDETECTIVE_API UDataTableManager : public UGameInstanceSubsystem
 {
@@ -55,4 +65,6 @@ public:
 	FGameplayPropertyData GetGameplayProperty(const FName &RowName);
 
 	// Caption methods
+	UFUNCTION(BlueprintCallable)
+	FCaptionData GetCaption(const FName &RowName);
 };

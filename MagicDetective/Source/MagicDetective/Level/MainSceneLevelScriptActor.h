@@ -17,6 +17,10 @@ class MAGICDETECTIVE_API AMainSceneLevelScriptActor : public ALevelScriptActor
 	// Gameplay Property Data Table
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataTable", meta = (AllowPrivateAccess = true))
 	class UDataTable *GameplayPropertyDataTable;
+
+	// Caption Data Table
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataTable", meta = (AllowPrivateAccess = true))
+	class UDataTable *CaptionDataTable;
 	
 protected:
 	virtual void BeginPlay() override;

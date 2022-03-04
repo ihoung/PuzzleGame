@@ -24,6 +24,9 @@ void UDataTableManager::InitializeData(EDataTableType DataTableType, class UData
 	case GameplayProperty:
 		GameplayPropertyData = Data;
 		break;
+	case Caption:
+		CaptionData = Data;
+		break;
 	default:
 		break;
 	}
@@ -34,4 +37,11 @@ FGameplayPropertyData UDataTableManager::GetGameplayProperty(const FName &RowNam
 	const FString ContextString(TEXT("Gameplay Property Data"));
 	FGameplayPropertyData *data = GameplayPropertyData->FindRow<FGameplayPropertyData>(RowName, ContextString);
 	return data ? *data : FGameplayPropertyData();
+}
+
+FCaptionData UDataTableManager::GetCaption(const FName &RowName)
+{
+	const FString ContextString(TEXT("Caption Data"));
+	FCaptionData *data = CaptionData->FindRow<FCaptionData>(RowName, ContextString);
+	return data ? *data : FCaptionData();
 }
