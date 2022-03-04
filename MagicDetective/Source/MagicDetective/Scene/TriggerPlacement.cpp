@@ -3,6 +3,7 @@
 
 #include "TriggerPlacement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
 
 #include "MovableActor.h"
 #include "MainSceneHUD.h"
@@ -64,6 +65,23 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 {
 	if (TargetActor)
 	{
+		// Disable interaction detection
+		TArray<UObject *> defaultSubobjects;
+		GetDefaultSubobjects(defaultSubobjects);
+		UBoxComponent *boxComponent = nullptr;
+		for (auto *component : defaultSubobjects)
+		{
+			if (component->IsA(UBoxComponent::StaticClass()))
+			{
+				boxComponent = Cast<UBoxComponent>(component);
+				break;
+			}
+		}
+		if (boxComponent)
+		{
+			boxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		}
+
 		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 		if (TargetActor->PlaceDelegate.IsBound())
@@ -85,14 +103,35 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 
 void ATriggerPlacement::DetachMovableActor(AMovableActor *TargetActor)
 {
-	AttachedChildActor = nullptr;
-
-	if (TargetActor->StaticClass() == PairedActor->StaticClass())
+	if (TargetActor)
 	{
-		OnCheckPairedActor.ExecuteIfBound(false);
-	}
+		// Enable interaction detection again
+		TArray<UObject *> defaultSubobjects;
+		GetDefaultSubobjects(defaultSubobjects);
+		UBoxComponent *boxComponent = nullptr;
+		for (auto *component : defaultSubobjects)
+		{
+			if (component->IsA(UBoxComponent::StaticClass()))
+			{
+				boxComponent = Cast<UBoxComponent>(component);
+				break;
+			}
+		}
+		if (boxComponent) 
+		{
+			boxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+		}
 
-	TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
+		AttachedChildActor = nullptr;
+
+		// Reduce paired Actor count
+		if (TargetActor->StaticClass() == PairedActor->StaticClass())
+		{
+			OnCheckPairedActor.ExecuteIfBound(false);
+		}
+
+		TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
+	}
 }
 
 

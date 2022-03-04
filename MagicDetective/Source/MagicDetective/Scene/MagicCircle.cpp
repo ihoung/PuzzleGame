@@ -33,10 +33,20 @@ void AMagicCircle::Tick(float DeltaTime)
 
 void AMagicCircle::ChangePairedTriggerCount(bool isPaired)
 {
-	PairedTriggerCount++;
-	if (PairedTriggerCount >= PlacementArray.Num())
+	if (isPaired)
 	{
-
+		PairedTriggerCount++;
+		if (PairedTriggerCount >= PlacementArray.Num())
+		{
+			for (auto *Placement : PlacementArray)
+			{
+				Placement->OnAllTriggersPaired();
+			}
+		}
+	}
+	else
+	{
+		PairedTriggerCount--;
 	}
 }
 
