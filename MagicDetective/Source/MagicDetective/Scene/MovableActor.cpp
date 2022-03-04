@@ -120,3 +120,6 @@ void AMovableActor::Place()
 	}
 }
 
+void AMovableActor::OnAllTriggerPaired_Implementation()
+{
+}

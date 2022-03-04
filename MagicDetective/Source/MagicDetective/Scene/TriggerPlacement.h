@@ -9,6 +9,8 @@
 /**
  * 
  */
+DECLARE_DELEGATE_OneParam(FOnCheckPairedActor, bool)
+
 UCLASS()
 class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 {
@@ -18,6 +20,7 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 	class USceneComponent *PlacementComponent;
 
 	bool bIsChildAttached;
+	class AMovableActor *AttachedChildActor;
 
 public:
 	ATriggerPlacement();
@@ -34,12 +37,20 @@ public:
 	UFUNCTION()
 	bool HasChildActorAttached() const;
 
+	UFUNCTION()
+	void OnAllTriggersPaired();
+
+	FOnCheckPairedActor OnCheckPairedActor;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	FString InteractionName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Paired Actor")
-	TSubclassOf<class AMovableActor> PairedActorClass;
+	TSubclassOf<class AMovableActor> PlaceableActor;
+
+	UPROPERTY(EditInstanceOnly, Category = "Paired Actor")
+	TSubclassOf<class AMovableActor> PairedActor;
 
 	UFUNCTION()
 	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);

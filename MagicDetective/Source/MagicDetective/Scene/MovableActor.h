@@ -36,6 +36,9 @@ public:
 	UFUNCTION()
 	virtual void HideInteractionHint() override;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnAllTriggerPaired();
+
 	bool bDetectTrigger;
 
 	FPlaceMovableActorDelegate PlaceDelegate;

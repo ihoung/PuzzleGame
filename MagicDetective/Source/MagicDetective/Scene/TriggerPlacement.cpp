@@ -24,7 +24,7 @@ void ATriggerPlacement::BeginOverlap(AActor *overlappedActor, AActor *otherActor
 {
 	if (otherActor && overlappedActor != otherActor)
 	{
-		if (otherActor->IsA(PairedActorClass))
+		if (otherActor->IsA(PlaceableActor))
 		{
 			AMovableActor * DetectedActor = Cast<AMovableActor>(otherActor);
 			DetectedActor->bDetectTrigger = true;
@@ -44,7 +44,7 @@ void ATriggerPlacement::EndOverlap(AActor *overlappedActor, AActor *otherActor)
 {
 	if (otherActor && overlappedActor != otherActor)
 	{
-		if (otherActor->IsA(PairedActorClass))
+		if (otherActor->IsA(PlaceableActor))
 		{
 			AMovableActor *DetectedActor = Cast<AMovableActor>(otherActor);
 			DetectedActor->bDetectTrigger = false;
@@ -73,13 +73,25 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 
 		DetachDelegateHandle = TargetActor->AttachToCharacterDelegate.AddUObject(this, &ATriggerPlacement::DetachMovableActor);
 
-		bIsChildAttached = true;
+		AttachedChildActor = TargetActor;
+
+		// Check if paired Actor
+		if (TargetActor->StaticClass() == PairedActor->StaticClass())
+		{
+			OnCheckPairedActor.ExecuteIfBound(true);
+		}
 	}
 }
 
 void ATriggerPlacement::DetachMovableActor(AMovableActor *TargetActor)
 {
-	bIsChildAttached = false;
+	AttachedChildActor = nullptr;
+
+	if (TargetActor->StaticClass() == PairedActor->StaticClass())
+	{
+		OnCheckPairedActor.ExecuteIfBound(false);
+	}
+
 	TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
 }
 
@@ -109,6 +121,14 @@ void ATriggerPlacement::PlaceFromPack()
 
 bool ATriggerPlacement::HasChildActorAttached() const
 {
-	return bIsChildAttached;
+	return AttachedChildActor != nullptr;
+}
+
+void ATriggerPlacement::OnAllTriggersPaired()
+{
+	if (AttachedChildActor)
+	{
+		AttachedChildActor->OnAllTriggerPaired();
+	}
 }
 
