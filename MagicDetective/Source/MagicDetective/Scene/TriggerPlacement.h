@@ -22,6 +22,9 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 	bool bIsChildAttached;
 	class AMovableActor *AttachedChildActor;
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	ATriggerPlacement();
 
@@ -66,4 +69,6 @@ private:
 	void DetachMovableActor(class AMovableActor *TargetActor);
 
 	FDelegateHandle DetachDelegateHandle;
+
+	void SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
 };

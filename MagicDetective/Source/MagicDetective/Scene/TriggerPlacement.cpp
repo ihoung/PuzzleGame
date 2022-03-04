@@ -21,6 +21,19 @@ ATriggerPlacement::ATriggerPlacement() :Super()
 
 }
 
+void ATriggerPlacement::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor *> childActors;
+	GetAttachedActors(childActors);
+	if (childActors.Num() != 0)
+	{
+		AttachedChildActor = Cast<AMovableActor>(childActors[0]);
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	}
+}
+
 void ATriggerPlacement::BeginOverlap(AActor *overlappedActor, AActor *otherActor)
 {
 	if (otherActor && overlappedActor != otherActor)
@@ -66,21 +79,7 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 	if (TargetActor)
 	{
 		// Disable interaction detection
-		TArray<UObject *> defaultSubobjects;
-		GetDefaultSubobjects(defaultSubobjects);
-		UBoxComponent *boxComponent = nullptr;
-		for (auto *component : defaultSubobjects)
-		{
-			if (component->IsA(UBoxComponent::StaticClass()))
-			{
-				boxComponent = Cast<UBoxComponent>(component);
-				break;
-			}
-		}
-		if (boxComponent)
-		{
-			boxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-		}
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
 		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
@@ -94,7 +93,7 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 		AttachedChildActor = TargetActor;
 
 		// Check if paired Actor
-		if (TargetActor->StaticClass() == PairedActor->StaticClass())
+		if (TargetActor->IsA(PairedActor))
 		{
 			OnCheckPairedActor.ExecuteIfBound(true);
 		}
@@ -106,31 +105,36 @@ void ATriggerPlacement::DetachMovableActor(AMovableActor *TargetActor)
 	if (TargetActor)
 	{
 		// Enable interaction detection again
-		TArray<UObject *> defaultSubobjects;
-		GetDefaultSubobjects(defaultSubobjects);
-		UBoxComponent *boxComponent = nullptr;
-		for (auto *component : defaultSubobjects)
-		{
-			if (component->IsA(UBoxComponent::StaticClass()))
-			{
-				boxComponent = Cast<UBoxComponent>(component);
-				break;
-			}
-		}
-		if (boxComponent) 
-		{
-			boxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		}
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 		AttachedChildActor = nullptr;
 
 		// Reduce paired Actor count
-		if (TargetActor->StaticClass() == PairedActor->StaticClass())
+		if (TargetActor->IsA(PairedActor))
 		{
 			OnCheckPairedActor.ExecuteIfBound(false);
 		}
 
 		TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
+	}
+}
+
+void ATriggerPlacement::SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse)
+{
+	TArray<UObject *> defaultSubobjects;
+	GetDefaultSubobjects(defaultSubobjects);
+	UBoxComponent *boxComponent = nullptr;
+	for (auto *component : defaultSubobjects)
+	{
+		if (component->IsA(UBoxComponent::StaticClass()))
+		{
+			boxComponent = Cast<UBoxComponent>(component);
+			break;
+		}
+	}
+	if (boxComponent)
+	{
+		boxComponent->SetCollisionResponseToChannel(Channel, NewResponse);
 	}
 }
 
@@ -170,4 +174,5 @@ void ATriggerPlacement::OnAllTriggersPaired()
 		AttachedChildActor->OnAllTriggerPaired();
 	}
 }
+
 
