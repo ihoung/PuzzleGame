@@ -100,6 +100,16 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 }
 
+void AFirstPersonCharacter::SetCharacterCollisionResponse(ECollisionChannel Channel, ECollisionResponse Response)
+{
+	GetCapsuleComponent()->SetCollisionResponseToChannel(Channel, Response);
+}
+
+void AFirstPersonCharacter::ResetCharacterCollisionResponse()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+}
+
 void AFirstPersonCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)

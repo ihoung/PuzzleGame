@@ -33,6 +33,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetCharacterCollisionResponse(ECollisionChannel Channel, ECollisionResponse Response);
+
+	void ResetCharacterCollisionResponse();
+
 protected:
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
