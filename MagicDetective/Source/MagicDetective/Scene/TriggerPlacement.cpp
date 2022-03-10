@@ -3,9 +3,11 @@
 
 #include "TriggerPlacement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
 
 #include "MovableActor.h"
 #include "MainSceneHUD.h"
+#include "PackManager.h"
 
 
 ATriggerPlacement::ATriggerPlacement() :Super()
@@ -19,11 +21,24 @@ ATriggerPlacement::ATriggerPlacement() :Super()
 
 }
 
+void ATriggerPlacement::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor *> childActors;
+	GetAttachedActors(childActors);
+	if (childActors.Num() != 0)
+	{
+		AttachedChildActor = Cast<AMovableActor>(childActors[0]);
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	}
+}
+
 void ATriggerPlacement::BeginOverlap(AActor *overlappedActor, AActor *otherActor)
 {
 	if (otherActor && overlappedActor != otherActor)
 	{
-		if (otherActor->IsA(PairedActorClass))
+		if (otherActor->IsA(PlaceableActor))
 		{
 			AMovableActor * DetectedActor = Cast<AMovableActor>(otherActor);
 			DetectedActor->bDetectTrigger = true;
@@ -43,10 +58,12 @@ void ATriggerPlacement::EndOverlap(AActor *overlappedActor, AActor *otherActor)
 {
 	if (otherActor && overlappedActor != otherActor)
 	{
-		if (otherActor->IsA(PairedActorClass))
+		if (otherActor->IsA(PlaceableActor))
 		{
 			AMovableActor *DetectedActor = Cast<AMovableActor>(otherActor);
 			DetectedActor->bDetectTrigger = false;
+
+			DetectedActor->PlaceDelegate.Unbind();
 
 			// Interaction hint widget
 			APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -61,11 +78,66 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 {
 	if (TargetActor)
 	{
+		// Disable interaction detection
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+
 		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-		TargetActor->PlaceDelegate.Unbind();
+		if (TargetActor->PlaceDelegate.IsBound())
+		{
+			TargetActor->PlaceDelegate.Unbind();
+		}
+
+		DetachDelegateHandle = TargetActor->AttachToCharacterDelegate.AddUObject(this, &ATriggerPlacement::DetachMovableActor);
+
+		AttachedChildActor = TargetActor;
+
+		// Check if paired Actor
+		if (TargetActor->IsA(PairedActor))
+		{
+			OnCheckPairedActor.ExecuteIfBound(true);
+		}
 	}
 }
+
+void ATriggerPlacement::DetachMovableActor(AMovableActor *TargetActor)
+{
+	if (TargetActor)
+	{
+		// Enable interaction detection again
+		SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+		AttachedChildActor = nullptr;
+
+		// Reduce paired Actor count
+		if (TargetActor->IsA(PairedActor))
+		{
+			OnCheckPairedActor.ExecuteIfBound(false);
+		}
+
+		TargetActor->AttachToCharacterDelegate.Remove(DetachDelegateHandle);
+	}
+}
+
+void ATriggerPlacement::SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse)
+{
+	TArray<UObject *> defaultSubobjects;
+	GetDefaultSubobjects(defaultSubobjects);
+	UBoxComponent *boxComponent = nullptr;
+	for (auto *component : defaultSubobjects)
+	{
+		if (component->IsA(UBoxComponent::StaticClass()))
+		{
+			boxComponent = Cast<UBoxComponent>(component);
+			break;
+		}
+	}
+	if (boxComponent)
+	{
+		boxComponent->SetCollisionResponseToChannel(Channel, NewResponse);
+	}
+}
+
 
 void ATriggerPlacement::ShowInteractionHint()
 {
@@ -80,4 +152,27 @@ void ATriggerPlacement::HideInteractionHint()
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
 	HUD->HideInteractionHint();
 }
+
+void ATriggerPlacement::PlaceFromPack()
+{
+	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
+	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty();
+	AMovableActor *SpawnedActor = GetWorld()->SpawnActor<AMovableActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
+	SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
+	PlaceMovableActor(SpawnedActor);
+}
+
+bool ATriggerPlacement::HasChildActorAttached() const
+{
+	return AttachedChildActor != nullptr;
+}
+
+void ATriggerPlacement::OnAllTriggersPaired()
+{
+	if (AttachedChildActor)
+	{
+		AttachedChildActor->OnAllTriggerPaired();
+	}
+}
+
 

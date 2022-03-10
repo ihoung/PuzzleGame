@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "MainSceneHUD.h"
+#include "PackManager.h"
 
 
 AMovableActor::AMovableActor() :Super()
@@ -22,7 +23,7 @@ void AMovableActor::Interact()
 	// Pick up and hold this object.
 	GetStaticMeshComponent()->SetSimulatePhysics(false);
 
-	AttachToCharacterDelegate.ExecuteIfBound(this);
+	AttachToCharacterDelegate.Broadcast(this);
 
 	BindInput();
 
@@ -95,6 +96,9 @@ void AMovableActor::Drop()
 
 void AMovableActor::CollectToPack()
 {
+	// Add to Pack
+	GetGameInstance()->GetSubsystem<UPackManager>()->AddToPack(DataID);
+
 	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
@@ -116,3 +120,6 @@ void AMovableActor::Place()
 	}
 }
 
+void AMovableActor::OnAllTriggerPaired_Implementation()
+{
+}

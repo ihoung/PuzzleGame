@@ -3,22 +3,23 @@
 
 #include "MainSceneHUD.h"
 #include "Blueprint/UserWidget.h"
-#include "Kismet/GameplayStatics.h"
+
+#include "CaptionWidget.h"
 
 void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 {
 	if (InteractionHint == nullptr)
 	{
-		InteractionHint = CreateWidget<UInteractionHintWidget>(GetWorld(), InteractionHintClass);
+		InteractionHint = CreateWidget<UInteractionHintWidget>(GetWorld(), InteractionHintWidget);
 	}
 	if (InteractionHint)
 	{
 		if (!InteractionHint->IsInViewport())
 		{
 			int32 ZOrder = 0;
-			if (WidgetZOrder.Contains(InteractionHintClass))
+			if (WidgetZOrder.Contains(InteractionHintWidget))
 			{
-				ZOrder = WidgetZOrder[InteractionHintClass];
+				ZOrder = WidgetZOrder[InteractionHintWidget];
 			}
 			InteractionHint->AddToViewport(ZOrder);
 		}
@@ -44,5 +45,36 @@ void AMainSceneHUD::HideInteractionHint()
 	if (InteractionHint)
 	{
 		InteractionHint->RemoveFromViewport();
+	}
+}
+
+void AMainSceneHUD::ShowCaption(const FString &TextContent, bool IsForcedToFinish)
+{
+	if (Caption == nullptr)
+	{
+		Caption = CreateWidget<UCaptionWidget>(GetWorld(), CaptionWidget);
+	}
+
+	if (!Caption->IsInViewport())
+	{
+		Caption->OnCaptionEnd.BindUObject(this, &AMainSceneHUD::HideCaption);
+
+		int32 ZOrder = 0;
+		if (WidgetZOrder.Contains(CaptionWidget))
+		{
+			ZOrder = WidgetZOrder[CaptionWidget];
+		}
+		Caption->AddToViewport(ZOrder);
+	}
+
+	Caption->ShowCaption(TextContent, IsForcedToFinish);
+}
+
+void AMainSceneHUD::HideCaption()
+{
+	if (Caption->IsInViewport())
+	{
+		Caption->OnCaptionEnd.Unbind();
+		Caption->RemoveFromViewport();
 	}
 }

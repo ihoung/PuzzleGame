@@ -9,6 +9,8 @@
 /**
  * 
  */
+DECLARE_DELEGATE_OneParam(FOnCheckPairedActor, bool)
+
 UCLASS()
 class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 {
@@ -16,6 +18,12 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Placement", meta = (AllowPrivateAccess = "true"))
 	class USceneComponent *PlacementComponent;
+
+	bool bIsChildAttached;
+	class AMovableActor *AttachedChildActor;
+
+protected:
+	virtual void BeginPlay() override;
 
 public:
 	ATriggerPlacement();
@@ -26,13 +34,26 @@ public:
 	UFUNCTION()
 	virtual void HideInteractionHint();
 
+	UFUNCTION()
+	void PlaceFromPack();
+
+	UFUNCTION()
+	bool HasChildActorAttached() const;
+
+	UFUNCTION()
+	void OnAllTriggersPaired();
+
+	FOnCheckPairedActor OnCheckPairedActor;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	FString InteractionName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Paired Actor")
-	TSubclassOf<class AMovableActor> PairedActorClass;
+	TSubclassOf<class AMovableActor> PlaceableActor;
+
+	UPROPERTY(EditInstanceOnly, Category = "Paired Actor")
+	TSubclassOf<class AMovableActor> PairedActor;
 
 	UFUNCTION()
 	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
@@ -43,4 +64,11 @@ protected:
 private:
 	UFUNCTION()
 	void PlaceMovableActor(class AMovableActor *TargetActor);
+
+	UFUNCTION()
+	void DetachMovableActor(class AMovableActor *TargetActor);
+
+	FDelegateHandle DetachDelegateHandle;
+
+	void SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse);
 };
