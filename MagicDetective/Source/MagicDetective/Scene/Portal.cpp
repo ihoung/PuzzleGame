@@ -56,23 +56,33 @@ void APortal::PostActorCreated()
 	}
 }
 
+void APortal::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
+{
+	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(APortal, LinkedPortal))
+	{
+		if (LinkedPortal && DynamicPortalMaterial)
+		{
+			DynamicPortalMaterial->SetTextureParameterValue(TextureParameterName, LinkedPortal->GetPortalRenderTarget());
+		}
+		else
+		{
+			DynamicPortalMaterial = UMaterialInstanceDynamic::Create(DefaultPortalMaterialAsset, GetWorld());
+			if (DynamicPortalMaterial)
+			{
+				PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
+			}
+		}
+	}
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
 // Called when the game starts or when spawned
 void APortal::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (LinkedPortal && DynamicPortalMaterial)
-	{
-		DynamicPortalMaterial->SetTextureParameterValue(TextureParameterName, LinkedPortal->GetPortalRenderTarget());
-	}
-	else
-	{
-		DynamicPortalMaterial = UMaterialInstanceDynamic::Create(DefaultPortalMaterialAsset, GetWorld());
-		if (DynamicPortalMaterial)
-		{
-			PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
-		}
-	}
 
 	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
@@ -83,7 +93,7 @@ void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UpdateSceneCapture();
+	UpdateSceneCapture();
 
 	if (OverlappedCharacter)
 	{
@@ -133,7 +143,7 @@ void APortal::UpdateSceneCapture()
 	if (LinkedPortal)
 	{
 		FTransform playerCameraTransform = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetTransformComponent()->GetComponentTransform();
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(playerCameraTransform, DefaultSceneComponent->GetComponentTransform());
+		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(playerCameraTransform, BackwardSceneComponent->GetComponentTransform());
 		LinkedPortal->SceneCaptureComponent->SetRelativeLocationAndRotation(relativeTransform.GetLocation(), relativeTransform.GetRotation());
 
 		// Set near clipping plane of scene capture

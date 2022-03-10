@@ -40,6 +40,8 @@ public:
 protected:
 	virtual void PostActorCreated() override;
 
+	virtual void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
