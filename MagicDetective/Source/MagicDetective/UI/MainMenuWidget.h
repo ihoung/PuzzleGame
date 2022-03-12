@@ -19,7 +19,7 @@ public :
 	FName MainLevel;
 
 protected:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))

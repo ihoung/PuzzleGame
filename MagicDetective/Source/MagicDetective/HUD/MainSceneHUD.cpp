@@ -5,6 +5,13 @@
 #include "Blueprint/UserWidget.h"
 
 #include "CaptionWidget.h"
+#include "PackWidget.h"
+
+
+void AMainSceneHUD::BeginPlay()
+{
+	ShowPackWidget();
+}
 
 void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 {
@@ -76,5 +83,32 @@ void AMainSceneHUD::HideCaption()
 	{
 		Caption->OnCaptionEnd.Unbind();
 		Caption->RemoveFromViewport();
+	}
+}
+
+void AMainSceneHUD::ShowPackWidget()
+{
+	if (Pack == nullptr)
+	{
+		Pack = CreateWidget<UPackWidget>(GetWorld(), PackWidget);
+	}
+
+	if (!Pack->IsInViewport())
+	{
+		int32 ZOrder = 0;
+		if (WidgetZOrder.Contains(PackWidget))
+		{
+			ZOrder = WidgetZOrder[PackWidget];
+		}
+		Pack->AddToViewport(ZOrder);
+	}
+
+}
+
+void AMainSceneHUD::OpenOrHidePack()
+{
+	if (Pack)
+	{
+		Pack->OpenOrHidePack();
 	}
 }

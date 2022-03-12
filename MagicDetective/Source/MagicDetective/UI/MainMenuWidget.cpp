@@ -5,14 +5,12 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
-bool UMainMenuWidget::Initialize()
+void UMainMenuWidget::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	Btn_StartGame->OnClicked.AddDynamic(this, &UMainMenuWidget::OnStartGameBtnClicked);
 	Btn_Quit->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitBtnClicked);
-
-	return true;
 }
 
 void UMainMenuWidget::OnStartGameBtnClicked()

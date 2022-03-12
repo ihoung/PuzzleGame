@@ -10,13 +10,11 @@ UCaptionWidget::UCaptionWidget(const FObjectInitializer &ObjectInitializer) :Sup
 	PlayerSpeed = 0.05f;
 }
 
-bool UCaptionWidget::Initialize()
+void UCaptionWidget::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	bShouldWait = false;
-
-	return true;
 }
 
 void UCaptionWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime)

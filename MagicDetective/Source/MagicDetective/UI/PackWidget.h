@@ -15,6 +15,33 @@ class MAGICDETECTIVE_API UPackWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
+
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox *VerticalBox_ItemContainer;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder *Border_SelectedItem;
+
+	UPROPERTY(meta = (BindWidget))
+	class UPackItemWidget *CurrentSelectedItem;
+
+private:
+	UPROPERTY()
+	TMap<FName, class UPackItemWidget *> ItemStack;
+
+	class UPackManager *PackManager;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Elements")
+	TSubclassOf<UUserWidget> PackItemWidget;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OpenOrHidePack();
+
+private:
+	void AddItem(const struct FGameplayPropertyInfo &ItemInfo);
+	void RemoveItem(const struct FGameplayPropertyInfo &ItemInfo);
+	void OnItemSelected(const struct FGameplayPropertyInfo &ItemInfo);
 
 };
