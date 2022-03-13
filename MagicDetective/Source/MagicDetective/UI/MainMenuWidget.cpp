@@ -4,6 +4,7 @@
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UMainMenuWidget::NativeOnInitialized()
 {
@@ -15,7 +16,7 @@ void UMainMenuWidget::NativeOnInitialized()
 
 void UMainMenuWidget::OnStartGameBtnClicked()
 {
-	UGameplayStatics::OpenLevel(this, MainLevel);
+	OnStartGame();
 }
 
 void UMainMenuWidget::OnQuitBtnClicked()
@@ -26,5 +27,12 @@ void UMainMenuWidget::OnQuitBtnClicked()
 	APlayerController *playerCtrler = world->GetFirstPlayerController();
 	if (!ensure(playerCtrler != nullptr)) return;
 
-	playerCtrler->ConsoleCommand("quit");
+	//playerCtrler->ConsoleCommand("quit");
+
+	UKismetSystemLibrary::QuitGame(world, playerCtrler, EQuitPreference::Quit, false);
+}
+
+void UMainMenuWidget::OpenNewLevel()
+{
+	UGameplayStatics::OpenLevel(this, MainLevel);
 }

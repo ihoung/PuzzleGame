@@ -21,6 +21,12 @@ public :
 protected:
 	virtual void NativeOnInitialized() override;
 
+	UFUNCTION(BlueprintCallable)
+	void OpenNewLevel();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStartGame();
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	class UButton *Btn_StartGame;
@@ -33,5 +39,4 @@ private:
 
 	UFUNCTION()
 	void OnQuitBtnClicked();
-
 };

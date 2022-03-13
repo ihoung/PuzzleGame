@@ -27,6 +27,6 @@ protected:
 	TSubclassOf<class UUserWidget> MainMenuClass;
 
 	// Keep a pointer to be able to hide it
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	class UUserWidget *MainMenu;
 };

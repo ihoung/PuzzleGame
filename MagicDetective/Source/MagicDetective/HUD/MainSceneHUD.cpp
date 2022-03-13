@@ -10,6 +10,8 @@
 
 void AMainSceneHUD::BeginPlay()
 {
+	Super::BeginPlay();
+
 	ShowPackWidget();
 }
 
