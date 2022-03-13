@@ -52,6 +52,9 @@ public:
 	//UFUNCTION()
 	class UTextureRenderTarget2D *GetPortalRenderTarget() const;
 
+	UFUNCTION(BlueprintCallable)
+	void SetPortalActive(bool bNewActive);
+
 private:
 	// overlapped character
 	class AFirstPersonCharacter *OverlappedCharacter;

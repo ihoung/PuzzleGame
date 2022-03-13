@@ -26,6 +26,7 @@ APortal::APortal()
 
 	PortalEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PortalEffect"));
 	PortalEffectComponent->SetupAttachment(DefaultSceneComponent);
+	PortalEffectComponent->SetAutoActivate(false);
 
 	PortalMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalMesh"));
 	PortalMeshComponent->SetupAttachment(DefaultSceneComponent);
@@ -35,8 +36,6 @@ APortal::APortal()
 
 	BackwardSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Backward"));
 	BackwardSceneComponent->SetupAttachment(DefaultSceneComponent);
-
-
 }
 
 void APortal::PostActorCreated()
@@ -108,6 +107,11 @@ void APortal::Tick(float DeltaTime)
 UTextureRenderTarget2D *APortal::GetPortalRenderTarget() const
 {
 	return RenderTarget;
+}
+
+void APortal::SetPortalActive(bool bNewActive)
+{
+	PortalEffectComponent->SetActive(bNewActive);
 }
 
 void APortal::BeginOverlap(class AActor *overlappedActor, class AActor *otherActor)
