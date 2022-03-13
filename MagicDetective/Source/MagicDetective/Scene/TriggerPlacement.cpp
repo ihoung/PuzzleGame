@@ -158,8 +158,15 @@ void ATriggerPlacement::PlaceFromPack()
 	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
 	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty();
 	AMovableActor *SpawnedActor = GetWorld()->SpawnActor<AMovableActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
-	SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
-	PlaceMovableActor(SpawnedActor);
+	if (SpawnedActor)
+	{
+		SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
+		PlaceMovableActor(SpawnedActor);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Actor [%s]! "), *SelectedProperty->StaticClass()->GetName());
+	}
 }
 
 bool ATriggerPlacement::HasChildActorAttached() const

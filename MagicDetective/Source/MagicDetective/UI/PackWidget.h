@@ -21,10 +21,10 @@ protected:
 	class UVerticalBox *VerticalBox_ItemContainer;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder *Border_SelectedItem;
-
+	class UOverlay *Overlay_SelectedItem;
+	
 	UPROPERTY(meta = (BindWidget))
-	class UPackItemWidget *CurrentSelectedItem;
+	class UImage *Image_CurrentSelectedItem;
 
 private:
 	UPROPERTY()

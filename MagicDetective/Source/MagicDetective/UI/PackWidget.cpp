@@ -3,7 +3,8 @@
 
 #include "PackWidget.h"
 #include "Components/VerticalBox.h"
-#include "Components/Border.h"
+#include "Components/Overlay.h"
+#include "Components/Image.h"
 
 #include "PackItemWidget.h"
 #include "PackManager.h"
@@ -18,7 +19,7 @@ void UPackWidget::NativeOnInitialized()
     PackManager->OnRemoveItem.AddUObject(this, &UPackWidget::RemoveItem);
     PackManager->OnSelectItem.AddUObject(this, &UPackWidget::OnItemSelected);
 
-    Border_SelectedItem->SetVisibility(ESlateVisibility::Hidden);
+    Overlay_SelectedItem->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPackWidget::AddItem(const FGameplayPropertyInfo &ItemInfo)
@@ -49,13 +50,13 @@ void UPackWidget::RemoveItem(const FGameplayPropertyInfo &ItemInfo)
 
 void UPackWidget::OnItemSelected(const FGameplayPropertyInfo &ItemInfo)
 {
-    if (!Border_SelectedItem->IsVisible())
+    if (!Overlay_SelectedItem->IsVisible())
     {
-        Border_SelectedItem->SetVisibility(ESlateVisibility::Visible);
+        Overlay_SelectedItem->SetVisibility(ESlateVisibility::Visible);
     }
 
     if (PackManager)
     {
-        CurrentSelectedItem->SetData(ItemInfo);
+        Image_CurrentSelectedItem->SetBrushFromTexture(ItemInfo.Icon);
     }
 }
