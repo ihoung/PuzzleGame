@@ -17,9 +17,11 @@ class MAGICDETECTIVE_API AInteractiveActor : public AStaticMeshActor
 public:
 	AInteractiveActor();
 
-	virtual void Interact();
+	UFUNCTION(BlueprintNativeEvent)
+	void Interact();
 
-	virtual void LongPressedInteract();
+	UFUNCTION(BlueprintNativeEvent)
+	void LongPressedInteract();
 
 	virtual void ShowInteractionHint();
 

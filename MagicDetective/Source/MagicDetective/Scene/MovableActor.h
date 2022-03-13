@@ -24,11 +24,9 @@ class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
 public:
 	AMovableActor();
 
-	UFUNCTION()
-	virtual void Interact() override;
+	virtual void Interact_Implementation() override;
 
-	UFUNCTION()
-	virtual void LongPressedInteract() override;
+	virtual void LongPressedInteract_Implementation() override;
 
 	UFUNCTION()
 	virtual void ShowInteractionHint() override;

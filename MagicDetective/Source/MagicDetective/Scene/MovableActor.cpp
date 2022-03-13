@@ -16,9 +16,9 @@ AMovableActor::AMovableActor() :Super()
 	bDetectTrigger = false;
 }
 
-void AMovableActor::Interact()
+void AMovableActor::Interact_Implementation()
 {
-	Super::Interact();
+	Super::Interact_Implementation();
 
 	// Pick up and hold this object.
 	GetStaticMeshComponent()->SetSimulatePhysics(false);
@@ -33,9 +33,9 @@ void AMovableActor::Interact()
 	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
-void AMovableActor::LongPressedInteract()
+void AMovableActor::LongPressedInteract_Implementation()
 {
-	Super::LongPressedInteract();
+	Super::LongPressedInteract_Implementation();
 
 	// Collect into pack.	
 	CollectToPack();

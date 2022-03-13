@@ -8,7 +8,7 @@ AInteractiveActor::AInteractiveActor()
 
 }
 
-void AInteractiveActor::Interact()
+void AInteractiveActor::Interact_Implementation()
 {
 	//if (GEngine)
 	//{
@@ -16,7 +16,7 @@ void AInteractiveActor::Interact()
 	//}
 }
 
-void AInteractiveActor::LongPressedInteract()
+void AInteractiveActor::LongPressedInteract_Implementation()
 {
 	//if (GEngine)
 	//{
