@@ -47,11 +47,25 @@ void UPackManager::SelectProperty(const FName &ID)
 	OnSelectItem.Broadcast(ItemInfo);
 }
 
-TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty()
+TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPack)
 {
-	RemoveFromPack(CurrentSelectedProperty);
-	FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(CurrentSelectedProperty);
-	return PropertyData.BlueprintActor;	
+	if (!CurrentSelectedProperty.IsNone())
+	{
+		if (bRemoveFromPack)
+		{
+			RemoveFromPack(CurrentSelectedProperty);
+		}
+
+		FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(CurrentSelectedProperty);
+		return PropertyData.BlueprintActor;
+	}
+	return nullptr;
+}
+
+TSubclassOf<class AMovableActor> UPackManager::GetPropertyByName(const FName &Name)
+{
+	FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
+	return PropertyData.BlueprintActor;
 }
 
 FGameplayPropertyInfo UPackManager::ParseItemInfo(const FName &ID, const FGameplayPropertyData &ItemData)

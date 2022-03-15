@@ -27,10 +27,18 @@ public:
     void HideMouseCursor();
 
 private:
+    // Open Pack
     bool bIsOpenPackKeyPressed;
-
     void OpenPackKeyPressed();
-
     void OpenPackKeyReleased();
 
+    // Show item display widget
+    bool bIsItemDisplayKeyPressed;
+    void ShowItemDisplayKeyPressed();
+    void ShowItemDisplayKeyReleased();
+
+    // Hide widget
+    bool bHideWidgetKeyPressed;
+    void HideWidgetKeyPressed();
+    void HideWidgetKeyReleased();
 };

@@ -28,6 +28,9 @@ class MAGICDETECTIVE_API AMainSceneHUD : public AHUD
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UCaptionWidget> CaptionWidget;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UItemDisplayWidget> ItemDisplayWidget;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,6 +43,8 @@ private:
 	class UCaptionWidget *Caption;
 
 	class UPackWidget *Pack;
+
+	class UItemDisplayWidget *ItemDisplay;
 
 	TArray<class UUserWidget *> PageStack;
 
@@ -64,4 +69,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OpenOrHidePack();
+
+	// Methods of Item Display
+	UFUNCTION(BlueprintCallable)
+	void ShowItemDisplay(TSubclassOf<class AMovableActor> ItemBlueprint);
+
+	UFUNCTION(BlueprintCallable)
+	void HideItemDisplay();
 };

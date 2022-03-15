@@ -21,9 +21,14 @@ class MAGICDETECTIVE_API UPackItemWidget : public UUserWidget
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage *Image_Icon;
+public:
+	UPackItemWidget(const FObjectInitializer &ObjectInitializer);
 
 protected:
 	virtual void NativeOnInitialized() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DoubleClickTimeSpan;
 
 public:
 	void SetData(const struct FGameplayPropertyInfo &ItemInfo);
@@ -35,4 +40,8 @@ private:
 
 	UFUNCTION()
 	void SelectItem();
+
+	// Double click count
+	int32 ClickCount;
+	void ResetClickCount();
 };

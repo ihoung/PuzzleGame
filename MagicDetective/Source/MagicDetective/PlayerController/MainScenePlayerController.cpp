@@ -4,11 +4,14 @@
 #include "MainScenePlayerController.h"
 #include "MainSceneHUD.h"
 #include "FirstPersonCharacter.h"
-
+#include "PackManager.h"
+#include "MovableActor.h"
+ 
 
 AMainScenePlayerController::AMainScenePlayerController(const FObjectInitializer &ObjectInitializer) :Super(ObjectInitializer)
 {
     bIsOpenPackKeyPressed = false;
+    bIsItemDisplayKeyPressed = false;
 }
 
 void AMainScenePlayerController::SetupInputComponent()
@@ -22,6 +25,12 @@ void AMainScenePlayerController::SetupInputComponent()
 
     InputComponent->BindAction("CallMouse", IE_Pressed, this, &AMainScenePlayerController::ShowMouseCursor);
     InputComponent->BindAction("CallMouse", IE_Released, this, &AMainScenePlayerController::HideMouseCursor);
+
+    InputComponent->BindAction("DisplayItem", IE_Pressed, this, &AMainScenePlayerController::ShowItemDisplayKeyPressed);
+    InputComponent->BindAction("DisplayItem", IE_Released, this, &AMainScenePlayerController::ShowItemDisplayKeyReleased);
+
+    InputComponent->BindAction("Exit", IE_Pressed, this, &AMainScenePlayerController::HideWidgetKeyPressed);
+    InputComponent->BindAction("Exit", IE_Released, this, &AMainScenePlayerController::HideWidgetKeyReleased);
 }
 
 void AMainScenePlayerController::OpenPackKeyPressed()
@@ -35,6 +44,38 @@ void AMainScenePlayerController::OpenPackKeyReleased()
     {
         GetHUD<AMainSceneHUD>()->OpenOrHidePack();
         bIsOpenPackKeyPressed = false;
+    }
+}
+
+void AMainScenePlayerController::ShowItemDisplayKeyPressed()
+{
+    bIsItemDisplayKeyPressed = true;
+}
+
+void AMainScenePlayerController::ShowItemDisplayKeyReleased()
+{
+    if (bIsItemDisplayKeyPressed)
+    {
+        TSubclassOf<AMovableActor> SelectedItem = GetGameInstance()->GetSubsystem<UPackManager>()->GetSelectedProperty();
+        if (SelectedItem)
+        {
+            GetHUD<AMainSceneHUD>()->ShowItemDisplay(SelectedItem);
+            bIsItemDisplayKeyPressed = false;
+        }
+    }
+}
+
+void AMainScenePlayerController::HideWidgetKeyPressed()
+{
+    bHideWidgetKeyPressed = true;
+}
+
+void AMainScenePlayerController::HideWidgetKeyReleased()
+{
+    if (bHideWidgetKeyPressed)
+    {
+        GetHUD<AMainSceneHUD>()->HideItemDisplay();
+        bHideWidgetKeyPressed = false;
     }
 }
 

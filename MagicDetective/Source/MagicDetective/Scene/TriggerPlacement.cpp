@@ -156,7 +156,7 @@ void ATriggerPlacement::HideInteractionHint()
 void ATriggerPlacement::PlaceFromPack()
 {
 	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
-	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty();
+	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty(true);
 	AMovableActor *SpawnedActor = GetWorld()->SpawnActor<AMovableActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
 	if (SpawnedActor)
 	{

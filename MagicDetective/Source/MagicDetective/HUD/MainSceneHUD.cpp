@@ -3,9 +3,12 @@
 
 #include "MainSceneHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "CaptionWidget.h"
 #include "PackWidget.h"
+#include "ItemDisplayWidget.h"
+#include "MainScenePlayerController.h"
 
 
 void AMainSceneHUD::BeginPlay()
@@ -112,5 +115,47 @@ void AMainSceneHUD::OpenOrHidePack()
 	if (Pack)
 	{
 		Pack->OpenOrHidePack();
+	}
+}
+
+void AMainSceneHUD::ShowItemDisplay(TSubclassOf<AMovableActor> ItemBlueprint)
+{
+	if (ItemDisplay == nullptr)
+	{
+		ItemDisplay = CreateWidget<UItemDisplayWidget>(GetWorld(), ItemDisplayWidget);
+	}
+
+	if (ItemDisplay)
+	{
+		if (!ItemDisplay->IsInViewport())
+		{
+			int32 ZOrder = 0;
+			if (WidgetZOrder.Contains(ItemDisplayWidget))
+			{
+				ZOrder = WidgetZOrder[ItemDisplayWidget];
+			}
+			ItemDisplay->AddToViewport(ZOrder);
+		}
+
+		AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (playerController)
+		{
+			playerController->ShowMouseCursor();
+		}
+		ItemDisplay->ShowItem(ItemBlueprint);
+	}
+}
+
+void AMainSceneHUD::HideItemDisplay()
+{
+	AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (playerController)
+	{
+		playerController->HideMouseCursor();
+	}
+
+	if (ItemDisplay->IsInViewport())
+	{
+		ItemDisplay->RemoveFromViewport();
 	}
 }
