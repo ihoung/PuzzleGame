@@ -15,7 +15,7 @@ class MAGICDETECTIVE_API UItemDisplayWidget : public UUserWidget
 	GENERATED_BODY()
 
 	UPROPERTY(meta = (BindWidget))
-	class UImage *Image_DisplayItem;
+	class UBorder *Border_DisplayItem;
 
 public:
 	UItemDisplayWidget(const FObjectInitializer &ObjectInitializer);
@@ -26,11 +26,11 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 
-	virtual FReply NativeOnMouseButtonDown(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent);
+	//virtual FReply NativeOnMouseButtonDown(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent);
 
-	virtual FReply NativeOnMouseMove(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent) override;
+	//virtual FReply NativeOnMouseMove(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent) override;
 
-	virtual FReply NativeOnMouseButtonUp(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent);
+	//virtual FReply NativeOnMouseButtonUp(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent);
 
 	virtual FReply NativeOnMouseWheel(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent) override;
 
@@ -53,9 +53,15 @@ private:
 	class UMaterialInstanceDynamic *DynamicDisplayMaterial;
 
 	// Mouse rotate item
-	bool bIsClickedInArea;
+	//bool bIsClickedInArea;
 	bool bIsMouseLeftButtonPressed;
 
 	UFUNCTION()
-	FEventReply MouseClickInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent);
+	FEventReply MouseButtonDownInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent);
+
+	UFUNCTION()
+	FEventReply MouseMoveInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent);
+
+	UFUNCTION()
+	FEventReply MouseButtonUpInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent);
 };

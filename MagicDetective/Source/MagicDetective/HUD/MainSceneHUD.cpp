@@ -154,7 +154,7 @@ void AMainSceneHUD::HideItemDisplay()
 		playerController->HideMouseCursor();
 	}
 
-	if (ItemDisplay->IsInViewport())
+	if (ItemDisplay && ItemDisplay->IsInViewport())
 	{
 		ItemDisplay->RemoveFromViewport();
 	}

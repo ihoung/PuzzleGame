@@ -3,6 +3,7 @@
 
 #include "TriggerPlacement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Components/BoxComponent.h"
 
 #include "MovableActor.h"
@@ -82,7 +83,11 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 		// Disable interaction detection
 		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
-		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		// Attach to placement
+		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::KeepWorldTransform);
+		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(TargetActor->GetAttachedPivotComponent()->GetComponentTransform(), TargetActor->GetActorTransform());
+		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, PlacementComponent->GetComponentTransform());
+		TargetActor->SetActorTransform(composedTransform);
 
 		if (TargetActor->PlaceDelegate.IsBound())
 		{

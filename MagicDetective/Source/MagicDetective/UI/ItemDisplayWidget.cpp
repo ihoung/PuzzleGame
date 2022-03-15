@@ -3,7 +3,7 @@
 
 #include "ItemDisplayWidget.h"
 #include "Materials/Material.h"
-#include "Components/Image.h"
+#include "Components/Border.h"
 #include "Engine/TextureRenderTarget2D.h"
 
 #include "MovableActor.h"
@@ -19,10 +19,12 @@ void UItemDisplayWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	bIsClickedInArea = false;
+	//bIsClickedInArea = false;
 	bIsMouseLeftButtonPressed = false;
 
-	Image_DisplayItem->OnMouseButtonDownEvent.BindDynamic(this, &UItemDisplayWidget::MouseClickInArea);
+	Border_DisplayItem->OnMouseButtonDownEvent.BindDynamic(this, &UItemDisplayWidget::MouseButtonDownInArea);
+	Border_DisplayItem->OnMouseMoveEvent.BindDynamic(this, &UItemDisplayWidget::MouseMoveInArea);
+	Border_DisplayItem->OnMouseButtonUpEvent.BindDynamic(this, &UItemDisplayWidget::MouseButtonUpInArea);
 
 	// Spawn Item Capture
 	ItemCaptureInstance = GetWorld()->SpawnActor<AItemCapture>(ItemCapture, ItemCaptureLocation, { 0.f,0.f,0.f });
@@ -32,41 +34,41 @@ void UItemDisplayWidget::NativeOnInitialized()
 	if (DynamicDisplayMaterial)
 	{
 		DynamicDisplayMaterial->SetTextureParameterValue(TextureParameterName, ItemCaptureInstance->RenderTarget);
-		Image_DisplayItem->SetBrushFromMaterial(DynamicDisplayMaterial);
+		Border_DisplayItem->SetBrushFromMaterial(DynamicDisplayMaterial);
 	}
 }
 
-FReply UItemDisplayWidget::NativeOnMouseButtonDown(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
-{
-	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
-	if (bIsClickedInArea)
-	{
-		bIsMouseLeftButtonPressed = true;
-	}
-
-	return FReply::Handled();
-}
-
-FReply UItemDisplayWidget::NativeOnMouseMove(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
-{
-	Super::NativeOnMouseMove(InGeometry, InMouseEvent);
-
-	if (bIsMouseLeftButtonPressed)
-	{
-		ItemCaptureInstance->RotateItem(InMouseEvent.GetCursorDelta().X, InMouseEvent.GetCursorDelta().Y);
-	}
-	return FReply::Handled();
-}
-
-FReply UItemDisplayWidget::NativeOnMouseButtonUp(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
-{
-	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
-
-	bIsMouseLeftButtonPressed = false;
-
-	return FReply::Handled();
-}
+//FReply UItemDisplayWidget::NativeOnMouseButtonDown(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
+//{
+//	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+//
+//	if (bIsClickedInArea)
+//	{
+//		bIsMouseLeftButtonPressed = true;
+//	}
+//
+//	return FReply::Handled();
+//}
+//
+//FReply UItemDisplayWidget::NativeOnMouseMove(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
+//{
+//	Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+//
+//	if (bIsMouseLeftButtonPressed)
+//	{
+//		ItemCaptureInstance->RotateItem(InMouseEvent.GetCursorDelta().X, InMouseEvent.GetCursorDelta().Y);
+//	}
+//	return FReply::Handled();
+//}
+//
+//FReply UItemDisplayWidget::NativeOnMouseButtonUp(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
+//{
+//	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+//
+//	bIsMouseLeftButtonPressed = false;
+//
+//	return FReply::Handled();
+//}
 
 FReply UItemDisplayWidget::NativeOnMouseWheel(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent)
 {
@@ -82,16 +84,29 @@ void UItemDisplayWidget::ShowItem(TSubclassOf<AMovableActor> ItemBlueprint)
 	ItemCaptureInstance->DisplayItem(ItemBlueprint);
 }
 
-FEventReply UItemDisplayWidget::MouseClickInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent)
+FEventReply UItemDisplayWidget::MouseButtonDownInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent)
 {
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		bIsClickedInArea = true;
+		bIsMouseLeftButtonPressed = true;
 	}
-	else
+
+	return FEventReply(true);
+}
+
+FEventReply UItemDisplayWidget::MouseMoveInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent)
+{
+	if (bIsMouseLeftButtonPressed)
 	{
-		bIsClickedInArea = false;
+		ItemCaptureInstance->RotateItem(MouseEvent.GetCursorDelta().X, MouseEvent.GetCursorDelta().Y);
 	}
+
+	return FEventReply(true);
+}
+
+FEventReply UItemDisplayWidget::MouseButtonUpInArea(FGeometry MyGeometry, const FPointerEvent &MouseEvent)
+{
+	bIsMouseLeftButtonPressed = false;
 
 	return FEventReply(true);
 }

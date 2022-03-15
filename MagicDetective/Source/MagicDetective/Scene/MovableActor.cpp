@@ -10,11 +10,20 @@
 
 AMovableActor::AMovableActor() :Super()
 {
+	AttachedPivotComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AttachedPivot"));
+	AttachedPivotComponent->SetupAttachment(GetRootComponent());
+
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
 
 	bDetectTrigger = false;
 }
+
+USceneComponent *AMovableActor::GetAttachedPivotComponent() const
+{
+	return AttachedPivotComponent;
+}
+
 
 void AMovableActor::Interact_Implementation()
 {

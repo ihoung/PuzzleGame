@@ -46,17 +46,18 @@ void AItemCapture::DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint)
 {
 	// Spawn new item
 	DisplayedItem = GetWorld()->SpawnActor<AMovableActor>(ItemBlueprint, ItemPlacement->GetComponentLocation(), { 0.f,0.f,0.f });
-	InteractivePivot = Cast<USceneComponent>(DisplayedItem->GetDefaultSubobjectByName(TEXT("InteractivePivot")));
-	if (InteractivePivot)
-	{
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(InteractivePivot->GetComponentTransform(), DisplayedItem->GetActorTransform());
-		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, ItemPlacement->GetComponentTransform());
-		DisplayedItem->SetActorTransform(composedTransform);
-	}
-	else
-	{
-		DisplayedItem->SetActorTransform(ItemPlacement->GetComponentTransform());
-	}
+	//InteractivePivot = Cast<USceneComponent>(DisplayedItem->GetDefaultSubobjectByName(TEXT("InteractivePivot")));
+	//if (InteractivePivot)
+	//{
+	//	FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(InteractivePivot->GetComponentTransform(), DisplayedItem->GetActorTransform());
+	//	FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, ItemPlacement->GetComponentTransform());
+	//	DisplayedItem->SetActorTransform(composedTransform);
+	//}
+	//else
+	//{
+	//	DisplayedItem->SetActorTransform(ItemPlacement->GetComponentTransform());
+	//}
+	DisplayedItem->AttachToComponent(ItemPlacement, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 	// Only show current display actor
 	SceneCaptureComponent->ShowOnlyActors = { DisplayedItem };
@@ -65,20 +66,15 @@ void AItemCapture::DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint)
 void AItemCapture::RotateItem(float ScreenOffset_X, float ScreenOffset_Y)
 {
 	FRotator rot = { 0.f, -ScreenOffset_Y, ScreenOffset_X };
-	if (InteractivePivot)
-	{
-		auto world_rot = UKismetMathLibrary::TransformRotation(SceneCaptureComponent->GetComponentTransform(), rot);
-		DisplayedItem->AddActorWorldRotation(world_rot);
-	}
-	else
-	{
-		DisplayedItem->AddActorWorldRotation(UKismetMathLibrary::TransformRotation(SceneCaptureComponent->GetComponentTransform(), rot));
-	}
+	DisplayedItem->AddActorWorldRotation(UKismetMathLibrary::TransformRotation(SceneCaptureComponent->GetComponentTransform(), rot));
 }
 
 void AItemCapture::ZoomItem(float WheelDelta)
 {
-	SceneCaptureComponent->FOVAngle -= WheelDelta;
+	float preFOV = SceneCaptureComponent->FOVAngle - WheelDelta;
+
+	if (preFOV >= 40 && preFOV <= 140)
+		SceneCaptureComponent->FOVAngle = preFOV;
 }
 
 

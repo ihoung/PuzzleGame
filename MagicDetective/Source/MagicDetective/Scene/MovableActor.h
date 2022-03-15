@@ -18,6 +18,9 @@ class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USceneComponent *AttachedPivotComponent;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PropertyInformation", meta = (AllowPrivateAccess = true))
 	FName DataID;
 	
@@ -33,6 +36,9 @@ public:
 
 	UFUNCTION()
 	virtual void HideInteractionHint() override;
+
+	UFUNCTION()
+	USceneComponent *GetAttachedPivotComponent() const;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnAllTriggerPaired();
