@@ -33,6 +33,12 @@ void UPackManager::RemoveFromPack(const FName &Name)
 {
 	PropertyStack.Remove(Name);
 
+	if (CurrentSelectedProperty == Name)
+	{
+		CurrentSelectedProperty = "";
+		OnSelectItem.Broadcast(ParseItemInfo("", FGameplayPropertyData()));
+	}
+
 	FGameplayPropertyData ItemData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
 	FGameplayPropertyInfo ItemInfo = ParseItemInfo(Name, ItemData);
 	OnRemoveItem.Broadcast(ItemInfo);

@@ -50,13 +50,17 @@ void UPackWidget::RemoveItem(const FGameplayPropertyInfo &ItemInfo)
 
 void UPackWidget::OnItemSelected(const FGameplayPropertyInfo &ItemInfo)
 {
-    if (!Overlay_SelectedItem->IsVisible())
+    if (ItemInfo.ID.IsNone())
     {
-        Overlay_SelectedItem->SetVisibility(ESlateVisibility::Visible);
+        Overlay_SelectedItem->SetVisibility(ESlateVisibility::Hidden);
     }
-
-    if (PackManager)
+    else
     {
+        if (!Overlay_SelectedItem->IsVisible())
+        {
+            Overlay_SelectedItem->SetVisibility(ESlateVisibility::Visible);
+        }
+
         Image_CurrentSelectedItem->SetBrushFromTexture(ItemInfo.Icon);
     }
 }
