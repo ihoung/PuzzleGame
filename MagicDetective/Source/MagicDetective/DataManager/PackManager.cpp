@@ -57,12 +57,13 @@ TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPac
 {
 	if (!CurrentSelectedProperty.IsNone())
 	{
+		FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(CurrentSelectedProperty);
+
 		if (bRemoveFromPack)
 		{
 			RemoveFromPack(CurrentSelectedProperty);
 		}
 
-		FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(CurrentSelectedProperty);
 		return PropertyData.BlueprintActor;
 	}
 	return nullptr;
