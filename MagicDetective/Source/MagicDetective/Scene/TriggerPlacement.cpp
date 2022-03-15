@@ -30,7 +30,8 @@ void ATriggerPlacement::BeginPlay()
 	if (childActors.Num() != 0)
 	{
 		AttachedChildActor = Cast<AMovableActor>(childActors[0]);
-		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		//SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		PlaceMovableActor(AttachedChildActor);
 	}
 }
 

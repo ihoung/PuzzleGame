@@ -53,6 +53,9 @@ void APortal::PostActorCreated()
 	{
 		PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
 	}
+
+	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
 }
 
 void APortal::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
@@ -82,9 +85,7 @@ void APortal::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
-	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
-	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
+	SetPortalActive(false);
 }
 
 // Called every frame
@@ -111,6 +112,7 @@ UTextureRenderTarget2D *APortal::GetPortalRenderTarget() const
 
 void APortal::SetPortalActive(bool bNewActive)
 {
+	PortalMeshComponent->SetActive(bNewActive);
 	PortalEffectComponent->SetActive(bNewActive);
 }
 
