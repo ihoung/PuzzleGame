@@ -7,7 +7,7 @@
 #include "Components/WidgetComponent.h"
 
 #include "InteractiveActor.h"
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 #include "TriggerPlacement.h"
 
 
@@ -212,7 +212,7 @@ void AFirstPersonCharacter::Interact()
 {
 	if (currentInteractiveActor != nullptr)
 	{
-		AMovableActor *targetActor = Cast<AMovableActor>(currentInteractiveActor);
+		AMovableStaticMeshActor *targetActor = Cast<AMovableStaticMeshActor>(currentInteractiveActor);
 		if (targetActor)
 		{
 			DetachDelegateHandle = targetActor->AttachToCharacterDelegate.AddUObject(this, &AFirstPersonCharacter::AttachMovableActor);
@@ -235,13 +235,13 @@ void AFirstPersonCharacter::LongPressedInteract()
 	}
 }
 
-void AFirstPersonCharacter::AttachMovableActor(AMovableActor *TargetActor)
+void AFirstPersonCharacter::AttachMovableActor(AMovableStaticMeshActor *TargetActor)
 {
 	TargetActor->AttachToComponent(ObjectHolder, FAttachmentTransformRules::KeepWorldTransform);
 	bCanDetectHit = false;
 }
 
-void AFirstPersonCharacter::DetachMovableActor(AMovableActor *TargetActor)
+void AFirstPersonCharacter::DetachMovableActor(AMovableStaticMeshActor *TargetActor)
 {
 	TargetActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	bCanDetectHit = true;

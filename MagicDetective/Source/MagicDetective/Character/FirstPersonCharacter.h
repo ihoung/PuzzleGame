@@ -79,9 +79,9 @@ private:
 	void LongPressedInteract();
 	/* Interaction Input End */
 
-	void AttachMovableActor(class AMovableActor *TargetActor);
+	void AttachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
-	void DetachMovableActor(class AMovableActor *TargetActor);
+	void DetachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
 	FDelegateHandle DetachDelegateHandle;
 };

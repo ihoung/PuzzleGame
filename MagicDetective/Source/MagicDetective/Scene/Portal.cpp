@@ -112,8 +112,9 @@ UTextureRenderTarget2D *APortal::GetPortalRenderTarget() const
 
 void APortal::SetPortalActive(bool bNewActive)
 {
-	PortalMeshComponent->SetActive(bNewActive);
+	SceneCaptureComponent->SetActive(bNewActive);
 	PortalEffectComponent->SetActive(bNewActive);
+	PortalMeshComponent->SetGenerateOverlapEvents(bNewActive);
 }
 
 void APortal::BeginOverlap(class AActor *overlappedActor, class AActor *otherActor)

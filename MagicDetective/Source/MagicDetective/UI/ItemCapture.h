@@ -33,13 +33,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	class AMovableActor *DisplayedItem;
+	class AMovableStaticMeshActor *DisplayedItem;
 
 	USceneComponent *InteractivePivot;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint);
+	void DisplayItem(TSubclassOf<class AMovableStaticMeshActor> ItemBlueprint);
 
 	UFUNCTION(BlueprintCallable)
 	void RotateItem(float ScreenOffset_X, float ScreenOffset_Y);

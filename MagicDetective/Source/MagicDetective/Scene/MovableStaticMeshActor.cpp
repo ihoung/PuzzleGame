@@ -1,31 +1,39 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
+#include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "MainSceneHUD.h"
 #include "PackManager.h"
 
 
-AMovableActor::AMovableActor() :Super()
+AMovableStaticMeshActor::AMovableStaticMeshActor() :Super()
 {
-	AttachedPivotComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AttachedPivot"));
-	AttachedPivotComponent->SetupAttachment(GetRootComponent());
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMeshComponent->SetupAttachment(GetRootComponent());
+	StaticMeshComponent->Mobility = EComponentMobility::Movable;
+	StaticMeshComponent->SetSimulatePhysics(true);
 
-	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
-	GetStaticMeshComponent()->SetSimulatePhysics(true);
+	AttachedPivotComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AttachedPivot"));
+	AttachedPivotComponent->SetupAttachment(StaticMeshComponent);
 
 	bDetectTrigger = false;
 }
 
-USceneComponent *AMovableActor::GetAttachedPivotComponent() const
+UStaticMeshComponent *AMovableStaticMeshActor::GetStaticMeshComponent() const
+{
+	return StaticMeshComponent;
+}
+
+USceneComponent *AMovableStaticMeshActor::GetAttachedPivotComponent() const
 {
 	return AttachedPivotComponent;
 }
 
 
-void AMovableActor::Interact_Implementation()
+void AMovableStaticMeshActor::Interact_Implementation()
 {
 	if (!bIsInteractable)
 		return;
@@ -33,7 +41,7 @@ void AMovableActor::Interact_Implementation()
 	Super::Interact_Implementation();
 
 	// Pick up and hold this object.
-	GetStaticMeshComponent()->SetSimulatePhysics(false);
+	StaticMeshComponent->SetSimulatePhysics(false);
 
 	AttachToCharacterDelegate.Broadcast(this);
 
@@ -45,7 +53,7 @@ void AMovableActor::Interact_Implementation()
 	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
-void AMovableActor::LongPressedInteract_Implementation()
+void AMovableStaticMeshActor::LongPressedInteract_Implementation()
 {
 	if (!bIsInteractable)
 		return;
@@ -56,7 +64,7 @@ void AMovableActor::LongPressedInteract_Implementation()
 	CollectToPack();
 }
 
-void AMovableActor::ShowInteractionHint()
+void AMovableStaticMeshActor::ShowInteractionHint()
 {
 	if (bIsInteractable)
 	{
@@ -66,14 +74,14 @@ void AMovableActor::ShowInteractionHint()
 	}
 }
 
-void AMovableActor::HideInteractionHint()
+void AMovableStaticMeshActor::HideInteractionHint()
 {
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
 	HUD->HideInteractionHint();
 }
 
-void AMovableActor::BindInput()
+void AMovableStaticMeshActor::BindInput()
 {
 	if (InputComponent)
 	{
@@ -84,15 +92,15 @@ void AMovableActor::BindInput()
 	InputComponent->RegisterComponent();
 	if (InputComponent)
 	{
-		InputComponent->BindAction("Drop", IE_Pressed, this, &AMovableActor::Drop);
-		InputComponent->BindAction("Collect", IE_Pressed, this, &AMovableActor::CollectToPack);
-		InputComponent->BindAction("Place", IE_Pressed, this, &AMovableActor::Place);
+		InputComponent->BindAction("Drop", IE_Pressed, this, &AMovableStaticMeshActor::Drop);
+		InputComponent->BindAction("Collect", IE_Pressed, this, &AMovableStaticMeshActor::CollectToPack);
+		InputComponent->BindAction("Place", IE_Pressed, this, &AMovableStaticMeshActor::Place);
 
 		EnableInput(GetWorld()->GetFirstPlayerController());
 	}
 }
 
-void AMovableActor::UnbindInput()
+void AMovableStaticMeshActor::UnbindInput()
 {
 	if (InputComponent)
 	{
@@ -101,18 +109,18 @@ void AMovableActor::UnbindInput()
 	}
 }
 
-void AMovableActor::Drop()
+void AMovableStaticMeshActor::Drop()
 {
 	DetachToCharacterDelegate.ExecuteIfBound(this);
 
 	UnbindInput();
 
-	GetStaticMeshComponent()->SetSimulatePhysics(true);
+	StaticMeshComponent->SetSimulatePhysics(true);
 
 	HideInteractionHint();
 }
 
-void AMovableActor::CollectToPack()
+void AMovableStaticMeshActor::CollectToPack()
 {
 	// Add to Pack
 	GetGameInstance()->GetSubsystem<UPackManager>()->AddToPack(DataID);
@@ -125,7 +133,7 @@ void AMovableActor::CollectToPack()
 	Destroy();
 }
 
-void AMovableActor::Place()
+void AMovableStaticMeshActor::Place()
 {
 	if (bDetectTrigger)
 	{
@@ -138,7 +146,7 @@ void AMovableActor::Place()
 	}
 }
 
-void AMovableActor::OnAllTriggerPaired_Implementation()
+void AMovableStaticMeshActor::OnAllTriggerPaired_Implementation()
 {
 	bIsInteractable = false;
 }

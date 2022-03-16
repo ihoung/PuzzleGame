@@ -53,7 +53,7 @@ void UPackManager::SelectProperty(const FName &ID)
 	OnSelectItem.Broadcast(ItemInfo);
 }
 
-TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPack)
+TSubclassOf<class AMovableStaticMeshActor> UPackManager::GetSelectedProperty(bool bRemoveFromPack)
 {
 	if (!CurrentSelectedProperty.IsNone())
 	{
@@ -69,7 +69,7 @@ TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPac
 	return nullptr;
 }
 
-TSubclassOf<class AMovableActor> UPackManager::GetPropertyByName(const FName &Name)
+TSubclassOf<class AMovableStaticMeshActor> UPackManager::GetPropertyByName(const FName &Name)
 {
 	FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
 	return PropertyData.BlueprintActor;

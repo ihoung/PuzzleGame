@@ -5,8 +5,8 @@
 #include "MainSceneHUD.h"
 #include "FirstPersonCharacter.h"
 #include "PackManager.h"
-#include "MovableActor.h"
- 
+#include "MovableStaticMeshActor.h"
+
 
 AMainScenePlayerController::AMainScenePlayerController(const FObjectInitializer &ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -56,7 +56,7 @@ void AMainScenePlayerController::ShowItemDisplayKeyReleased()
 {
     if (bIsItemDisplayKeyPressed)
     {
-        TSubclassOf<AMovableActor> SelectedItem = GetGameInstance()->GetSubsystem<UPackManager>()->GetSelectedProperty();
+        TSubclassOf<AMovableStaticMeshActor> SelectedItem = GetGameInstance()->GetSubsystem<UPackManager>()->GetSelectedProperty();
         if (SelectedItem)
         {
             GetHUD<AMainSceneHUD>()->ShowItemDisplay(SelectedItem);

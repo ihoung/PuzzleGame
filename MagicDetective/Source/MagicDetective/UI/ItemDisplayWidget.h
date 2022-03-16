@@ -21,7 +21,7 @@ public:
 	UItemDisplayWidget(const FObjectInitializer &ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable)
-	void ShowItem(TSubclassOf<class AMovableActor> ItemBlueprint);
+	void ShowItem(TSubclassOf<class AMovableStaticMeshActor> ItemBlueprint);
 
 protected:
 	virtual void NativeOnInitialized() override;

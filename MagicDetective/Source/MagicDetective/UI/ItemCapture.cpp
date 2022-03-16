@@ -6,7 +6,7 @@
 #include "Kismet/KismetRenderingLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 
 
 // Sets default values
@@ -42,10 +42,10 @@ void AItemCapture::Tick(float DeltaTime)
 
 }
 
-void AItemCapture::DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint)
+void AItemCapture::DisplayItem(TSubclassOf<AMovableStaticMeshActor> ItemBlueprint)
 {
 	// Spawn new item
-	DisplayedItem = GetWorld()->SpawnActor<AMovableActor>(ItemBlueprint, ItemPlacement->GetComponentLocation(), { 0.f,0.f,0.f });
+	DisplayedItem = GetWorld()->SpawnActor<AMovableStaticMeshActor>(ItemBlueprint, ItemPlacement->GetComponentLocation(), { 0.f,0.f,0.f });
 	//InteractivePivot = Cast<USceneComponent>(DisplayedItem->GetDefaultSubobjectByName(TEXT("InteractivePivot")));
 	//if (InteractivePivot)
 	//{

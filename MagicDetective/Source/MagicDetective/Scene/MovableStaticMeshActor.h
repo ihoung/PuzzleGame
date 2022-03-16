@@ -3,29 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractiveActor.h"
-#include "MovableActor.generated.h"
+#include "Scene/InteractiveActor.h"
+#include "MovableStaticMeshActor.generated.h"
 
 /**
  * 
  */
-DECLARE_DELEGATE_OneParam(FPlaceMovableActorDelegate, AMovableActor*)
-DECLARE_MULTICAST_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableActor*)
-DECLARE_DELEGATE_OneParam(FDetachToCharacterDelegate, AMovableActor*)
+DECLARE_DELEGATE_OneParam(FPlaceMovableActorDelegate, AMovableStaticMeshActor *)
+DECLARE_MULTICAST_DELEGATE_OneParam(FAttachToCharacterDelegate, AMovableStaticMeshActor *)
+DECLARE_DELEGATE_OneParam(FDetachToCharacterDelegate, AMovableStaticMeshActor *)
 
 UCLASS()
-class MAGICDETECTIVE_API AMovableActor : public AInteractiveActor
+class MAGICDETECTIVE_API AMovableStaticMeshActor : public AInteractiveActor
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(Category = StaticMeshActor, VisibleAnywhere, BlueprintReadOnly, meta = (ExposeFunctionCategories = "Mesh,Rendering,Physics,Components|StaticMesh", AllowPrivateAccess = "true"))
+	class UStaticMeshComponent *StaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USceneComponent *AttachedPivotComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PropertyInformation", meta = (AllowPrivateAccess = true))
 	FName DataID;
-	
+
 public:
-	AMovableActor();
+	AMovableStaticMeshActor();
 
 	virtual void Interact_Implementation() override;
 
@@ -36,6 +39,9 @@ public:
 
 	UFUNCTION()
 	virtual void HideInteractionHint() override;
+
+	UFUNCTION(BlueprintCallable)
+	class UStaticMeshComponent *GetStaticMeshComponent() const;
 
 	UFUNCTION()
 	USceneComponent *GetAttachedPivotComponent() const;
@@ -68,5 +74,4 @@ private:
 
 	UFUNCTION()
 	void Place();
-
 };

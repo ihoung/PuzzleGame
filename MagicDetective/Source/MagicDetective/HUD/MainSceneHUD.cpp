@@ -118,7 +118,7 @@ void AMainSceneHUD::OpenOrHidePack()
 	}
 }
 
-void AMainSceneHUD::ShowItemDisplay(TSubclassOf<AMovableActor> ItemBlueprint)
+void AMainSceneHUD::ShowItemDisplay(TSubclassOf<class AMovableStaticMeshActor> ItemBlueprint)
 {
 	if (ItemDisplay == nullptr)
 	{

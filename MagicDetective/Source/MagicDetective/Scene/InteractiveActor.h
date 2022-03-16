@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class MAGICDETECTIVE_API AInteractiveActor : public AStaticMeshActor
+class MAGICDETECTIVE_API AInteractiveActor : public AActor
 {
 	GENERATED_BODY()
 

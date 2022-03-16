@@ -72,7 +72,7 @@ public:
 
 	// Methods of Item Display
 	UFUNCTION(BlueprintCallable)
-	void ShowItemDisplay(TSubclassOf<class AMovableActor> ItemBlueprint);
+	void ShowItemDisplay(TSubclassOf<class AMovableStaticMeshActor> ItemBlueprint);
 
 	UFUNCTION(BlueprintCallable)
 	void HideItemDisplay();

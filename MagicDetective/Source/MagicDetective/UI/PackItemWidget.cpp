@@ -44,7 +44,7 @@ void UPackItemWidget::SelectItem()
 	ClickCount++;
 	if (ClickCount >= 2)
 	{
-		TSubclassOf<AMovableActor> ItemSubclass = GetGameInstance()->GetSubsystem<UPackManager>()->GetPropertyByName(ItemID);
+		TSubclassOf<AMovableStaticMeshActor> ItemSubclass = GetGameInstance()->GetSubsystem<UPackManager>()->GetPropertyByName(ItemID);
 		GetGameInstance()->GetFirstLocalPlayerController()->GetHUD<AMainSceneHUD>()->ShowItemDisplay(ItemSubclass);
 	}
 }

@@ -27,7 +27,7 @@ public:
 	TAssetPtr<class UTexture> Icon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<class AMovableActor> BlueprintActor;
+	TSubclassOf<class AMovableStaticMeshActor> BlueprintActor;
 
 };
 

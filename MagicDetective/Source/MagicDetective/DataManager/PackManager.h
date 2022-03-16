@@ -54,10 +54,10 @@ public:
 	void SelectProperty(const FName &Name);
 
 	UFUNCTION(BlueprintCallable)
-	TSubclassOf<class AMovableActor> GetSelectedProperty(bool bRemoveFromPack = false);
+	TSubclassOf<class AMovableStaticMeshActor> GetSelectedProperty(bool bRemoveFromPack = false);
 
 	UFUNCTION(BlueprintCallable)
-	TSubclassOf<class AMovableActor> GetPropertyByName(const FName &Name);
+	TSubclassOf<class AMovableStaticMeshActor> GetPropertyByName(const FName &Name);
 
 	FAddItemDelegate OnAddItem;
 	FRemoveItemDelegate OnRemoveItem;
