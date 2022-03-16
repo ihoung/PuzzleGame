@@ -16,15 +16,23 @@ class MAGICDETECTIVE_API AMainSceneHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "ZOrder")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ZOrder", meta = (AllowPrivateAccess = true))
 	TMap<TSubclassOf<class UUserWidget>, int32> WidgetZOrder;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UInteractionHintWidget> InteractionHintWidget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UPackWidget> PackWidget;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UCaptionWidget> CaptionWidget;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Widgets", meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UItemDisplayWidget> ItemDisplayWidget;
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	// Keep a pointer to be able to hide it
@@ -33,6 +41,10 @@ private:
 
 	UPROPERTY()
 	class UCaptionWidget *Caption;
+
+	class UPackWidget *Pack;
+
+	class UItemDisplayWidget *ItemDisplay;
 
 	TArray<class UUserWidget *> PageStack;
 
@@ -50,4 +62,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HideCaption();
+
+	// Methods of Pack Widget
+	UFUNCTION(BlueprintCallable)
+	void ShowPackWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenOrHidePack();
+
+	// Methods of Item Display
+	UFUNCTION(BlueprintCallable)
+	void ShowItemDisplay(TSubclassOf<class AMovableActor> ItemBlueprint);
+
+	UFUNCTION(BlueprintCallable)
+	void HideItemDisplay();
 };

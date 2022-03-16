@@ -19,7 +19,13 @@ public :
 	FName MainLevel;
 
 protected:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
+
+	UFUNCTION(BlueprintCallable)
+	void OpenNewLevel();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStartGame();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -33,5 +39,4 @@ private:
 
 	UFUNCTION()
 	void OnQuitBtnClicked();
-
 };

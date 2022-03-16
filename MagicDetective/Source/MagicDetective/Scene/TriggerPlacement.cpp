@@ -3,6 +3,7 @@
 
 #include "TriggerPlacement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Components/BoxComponent.h"
 
 #include "MovableActor.h"
@@ -30,7 +31,8 @@ void ATriggerPlacement::BeginPlay()
 	if (childActors.Num() != 0)
 	{
 		AttachedChildActor = Cast<AMovableActor>(childActors[0]);
-		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		//SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		PlaceMovableActor(AttachedChildActor);
 	}
 }
 
@@ -81,7 +83,11 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 		// Disable interaction detection
 		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
-		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		// Attach to placement
+		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::KeepWorldTransform);
+		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(TargetActor->GetAttachedPivotComponent()->GetComponentTransform(), TargetActor->GetActorTransform());
+		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, PlacementComponent->GetComponentTransform());
+		TargetActor->SetActorTransform(composedTransform);
 
 		if (TargetActor->PlaceDelegate.IsBound())
 		{
@@ -156,10 +162,17 @@ void ATriggerPlacement::HideInteractionHint()
 void ATriggerPlacement::PlaceFromPack()
 {
 	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
-	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty();
+	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty(true);
 	AMovableActor *SpawnedActor = GetWorld()->SpawnActor<AMovableActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
-	SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
-	PlaceMovableActor(SpawnedActor);
+	if (SpawnedActor)
+	{
+		SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
+		PlaceMovableActor(SpawnedActor);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Actor [%s]! "), *SelectedProperty->StaticClass()->GetName());
+	}
 }
 
 bool ATriggerPlacement::HasChildActorAttached() const

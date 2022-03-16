@@ -10,15 +10,27 @@
 
 AMovableActor::AMovableActor() :Super()
 {
+	AttachedPivotComponent = CreateDefaultSubobject<USceneComponent>(TEXT("AttachedPivot"));
+	AttachedPivotComponent->SetupAttachment(GetRootComponent());
+
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
 	GetStaticMeshComponent()->SetSimulatePhysics(true);
 
 	bDetectTrigger = false;
 }
 
-void AMovableActor::Interact()
+USceneComponent *AMovableActor::GetAttachedPivotComponent() const
 {
-	Super::Interact();
+	return AttachedPivotComponent;
+}
+
+
+void AMovableActor::Interact_Implementation()
+{
+	if (!bIsInteractable)
+		return;
+
+	Super::Interact_Implementation();
 
 	// Pick up and hold this object.
 	GetStaticMeshComponent()->SetSimulatePhysics(false);
@@ -33,9 +45,12 @@ void AMovableActor::Interact()
 	HUD->ShowInteractionHint(EInteractionHintMode::Hold);
 }
 
-void AMovableActor::LongPressedInteract()
+void AMovableActor::LongPressedInteract_Implementation()
 {
-	Super::LongPressedInteract();
+	if (!bIsInteractable)
+		return;
+
+	Super::LongPressedInteract_Implementation();
 
 	// Collect into pack.	
 	CollectToPack();
@@ -43,9 +58,12 @@ void AMovableActor::LongPressedInteract()
 
 void AMovableActor::ShowInteractionHint()
 {
-	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
-	HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
+	if (bIsInteractable)
+	{
+		APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+		HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
+	}
 }
 
 void AMovableActor::HideInteractionHint()
@@ -122,4 +140,5 @@ void AMovableActor::Place()
 
 void AMovableActor::OnAllTriggerPaired_Implementation()
 {
+	bIsInteractable = false;
 }

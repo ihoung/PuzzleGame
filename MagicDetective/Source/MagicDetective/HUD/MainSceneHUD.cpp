@@ -3,8 +3,20 @@
 
 #include "MainSceneHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "CaptionWidget.h"
+#include "PackWidget.h"
+#include "ItemDisplayWidget.h"
+#include "MainScenePlayerController.h"
+
+
+void AMainSceneHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ShowPackWidget();
+}
 
 void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 {
@@ -42,7 +54,7 @@ void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 
 void AMainSceneHUD::HideInteractionHint()
 {
-	if (InteractionHint)
+	if (InteractionHint && InteractionHint->IsInViewport())
 	{
 		InteractionHint->RemoveFromViewport();
 	}
@@ -76,5 +88,74 @@ void AMainSceneHUD::HideCaption()
 	{
 		Caption->OnCaptionEnd.Unbind();
 		Caption->RemoveFromViewport();
+	}
+}
+
+void AMainSceneHUD::ShowPackWidget()
+{
+	if (Pack == nullptr)
+	{
+		Pack = CreateWidget<UPackWidget>(GetWorld(), PackWidget);
+	}
+
+	if (!Pack->IsInViewport())
+	{
+		int32 ZOrder = 0;
+		if (WidgetZOrder.Contains(PackWidget))
+		{
+			ZOrder = WidgetZOrder[PackWidget];
+		}
+		Pack->AddToViewport(ZOrder);
+	}
+
+}
+
+void AMainSceneHUD::OpenOrHidePack()
+{
+	if (Pack)
+	{
+		Pack->OpenOrHidePack();
+	}
+}
+
+void AMainSceneHUD::ShowItemDisplay(TSubclassOf<AMovableActor> ItemBlueprint)
+{
+	if (ItemDisplay == nullptr)
+	{
+		ItemDisplay = CreateWidget<UItemDisplayWidget>(GetWorld(), ItemDisplayWidget);
+	}
+
+	if (ItemDisplay)
+	{
+		if (!ItemDisplay->IsInViewport())
+		{
+			int32 ZOrder = 0;
+			if (WidgetZOrder.Contains(ItemDisplayWidget))
+			{
+				ZOrder = WidgetZOrder[ItemDisplayWidget];
+			}
+			ItemDisplay->AddToViewport(ZOrder);
+		}
+
+		AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (playerController)
+		{
+			playerController->ShowMouseCursor();
+		}
+		ItemDisplay->ShowItem(ItemBlueprint);
+	}
+}
+
+void AMainSceneHUD::HideItemDisplay()
+{
+	AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (playerController)
+	{
+		playerController->HideMouseCursor();
+	}
+
+	if (ItemDisplay && ItemDisplay->IsInViewport())
+	{
+		ItemDisplay->RemoveFromViewport();
 	}
 }

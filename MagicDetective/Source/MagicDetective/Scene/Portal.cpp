@@ -26,6 +26,7 @@ APortal::APortal()
 
 	PortalEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PortalEffect"));
 	PortalEffectComponent->SetupAttachment(DefaultSceneComponent);
+	PortalEffectComponent->SetAutoActivate(false);
 
 	PortalMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PortalMesh"));
 	PortalMeshComponent->SetupAttachment(DefaultSceneComponent);
@@ -35,8 +36,6 @@ APortal::APortal()
 
 	BackwardSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Backward"));
 	BackwardSceneComponent->SetupAttachment(DefaultSceneComponent);
-
-
 }
 
 void APortal::PostActorCreated()
@@ -54,6 +53,31 @@ void APortal::PostActorCreated()
 	{
 		PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
 	}
+
+	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
+}
+
+void APortal::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
+{
+	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(APortal, LinkedPortal))
+	{
+		if (LinkedPortal && DynamicPortalMaterial)
+		{
+			DynamicPortalMaterial->SetTextureParameterValue(TextureParameterName, LinkedPortal->GetPortalRenderTarget());
+		}
+		else
+		{
+			DynamicPortalMaterial = UMaterialInstanceDynamic::Create(DefaultPortalMaterialAsset, GetWorld());
+			if (DynamicPortalMaterial)
+			{
+				PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
+			}
+		}
+	}
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
 // Called when the game starts or when spawned
@@ -61,21 +85,7 @@ void APortal::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (LinkedPortal && DynamicPortalMaterial)
-	{
-		DynamicPortalMaterial->SetTextureParameterValue(TextureParameterName, LinkedPortal->GetPortalRenderTarget());
-	}
-	else
-	{
-		DynamicPortalMaterial = UMaterialInstanceDynamic::Create(DefaultPortalMaterialAsset, GetWorld());
-		if (DynamicPortalMaterial)
-		{
-			PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
-		}
-	}
-
-	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
-	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
+	SetPortalActive(false);
 }
 
 // Called every frame
@@ -83,7 +93,7 @@ void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UpdateSceneCapture();
+	UpdateSceneCapture();
 
 	if (OverlappedCharacter)
 	{
@@ -98,6 +108,12 @@ void APortal::Tick(float DeltaTime)
 UTextureRenderTarget2D *APortal::GetPortalRenderTarget() const
 {
 	return RenderTarget;
+}
+
+void APortal::SetPortalActive(bool bNewActive)
+{
+	PortalMeshComponent->SetActive(bNewActive);
+	PortalEffectComponent->SetActive(bNewActive);
 }
 
 void APortal::BeginOverlap(class AActor *overlappedActor, class AActor *otherActor)
@@ -133,7 +149,7 @@ void APortal::UpdateSceneCapture()
 	if (LinkedPortal)
 	{
 		FTransform playerCameraTransform = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetTransformComponent()->GetComponentTransform();
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(playerCameraTransform, DefaultSceneComponent->GetComponentTransform());
+		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(playerCameraTransform, BackwardSceneComponent->GetComponentTransform());
 		LinkedPortal->SceneCaptureComponent->SetRelativeLocationAndRotation(relativeTransform.GetLocation(), relativeTransform.GetRotation());
 
 		// Set near clipping plane of scene capture

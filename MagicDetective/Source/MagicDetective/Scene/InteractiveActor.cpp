@@ -5,10 +5,10 @@
 
 AInteractiveActor::AInteractiveActor()
 {
-
+	bIsInteractable = true;
 }
 
-void AInteractiveActor::Interact()
+void AInteractiveActor::Interact_Implementation()
 {
 	//if (GEngine)
 	//{
@@ -16,7 +16,7 @@ void AInteractiveActor::Interact()
 	//}
 }
 
-void AInteractiveActor::LongPressedInteract()
+void AInteractiveActor::LongPressedInteract_Implementation()
 {
 	//if (GEngine)
 	//{
@@ -32,5 +32,15 @@ void AInteractiveActor::ShowInteractionHint()
 void AInteractiveActor::HideInteractionHint()
 {
 
+}
+
+void AInteractiveActor::SetInteractable(bool IsInteractable)
+{
+	bIsInteractable = IsInteractable;
+}
+
+bool AInteractiveActor::GetInteractable() const
+{
+	return bIsInteractable;
 }
 

@@ -5,12 +5,6 @@
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 
-bool UInteractionHintWidget::Initialize()
-{
-	Super::Initialize();
-
-	return true;
-}
 
 void UInteractionHintWidget::InteractMode(FString info)
 {

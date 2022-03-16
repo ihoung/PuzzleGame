@@ -23,9 +23,6 @@ class MAGICDETECTIVE_API UInteractionHintWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-protected:
-	virtual bool Initialize() override;
-
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UHorizontalBox *HorizontalBox_InteractionHint;

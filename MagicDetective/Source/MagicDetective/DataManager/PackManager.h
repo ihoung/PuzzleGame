@@ -9,6 +9,23 @@
 /**
  * 
  */
+USTRUCT(BlueprintType)
+struct FGameplayPropertyInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName ID;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+ 	class UTexture2D *Icon;
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FAddItemDelegate, const FGameplayPropertyInfo &)
+DECLARE_MULTICAST_DELEGATE_OneParam(FRemoveItemDelegate, const FGameplayPropertyInfo&)
+DECLARE_MULTICAST_DELEGATE_OneParam(FSelectItemDelegate, const FGameplayPropertyInfo&)
+
 UCLASS()
 class MAGICDETECTIVE_API UPackManager : public UGameInstanceSubsystem
 {
@@ -37,6 +54,15 @@ public:
 	void SelectProperty(const FName &Name);
 
 	UFUNCTION(BlueprintCallable)
-	TSubclassOf<class AMovableActor> GetSelectedProperty();
+	TSubclassOf<class AMovableActor> GetSelectedProperty(bool bRemoveFromPack = false);
 
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<class AMovableActor> GetPropertyByName(const FName &Name);
+
+	FAddItemDelegate OnAddItem;
+	FRemoveItemDelegate OnRemoveItem;
+	FSelectItemDelegate OnSelectItem;
+
+private:
+	FGameplayPropertyInfo ParseItemInfo(const FName &ID, const struct FGameplayPropertyData &ItemData);
 };

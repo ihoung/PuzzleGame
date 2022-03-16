@@ -40,6 +40,8 @@ public:
 protected:
 	virtual void PostActorCreated() override;
 
+	virtual void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -49,6 +51,9 @@ public:
 
 	//UFUNCTION()
 	class UTextureRenderTarget2D *GetPortalRenderTarget() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetPortalActive(bool bNewActive);
 
 private:
 	// overlapped character

@@ -4,20 +4,19 @@
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
-bool UMainMenuWidget::Initialize()
+void UMainMenuWidget::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	Btn_StartGame->OnClicked.AddDynamic(this, &UMainMenuWidget::OnStartGameBtnClicked);
 	Btn_Quit->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitBtnClicked);
-
-	return true;
 }
 
 void UMainMenuWidget::OnStartGameBtnClicked()
 {
-	UGameplayStatics::OpenLevel(this, MainLevel);
+	OnStartGame();
 }
 
 void UMainMenuWidget::OnQuitBtnClicked()
@@ -28,5 +27,12 @@ void UMainMenuWidget::OnQuitBtnClicked()
 	APlayerController *playerCtrler = world->GetFirstPlayerController();
 	if (!ensure(playerCtrler != nullptr)) return;
 
-	playerCtrler->ConsoleCommand("quit");
+	//playerCtrler->ConsoleCommand("quit");
+
+	UKismetSystemLibrary::QuitGame(world, playerCtrler, EQuitPreference::Quit, false);
+}
+
+void UMainMenuWidget::OpenNewLevel()
+{
+	UGameplayStatics::OpenLevel(this, MainLevel);
 }
