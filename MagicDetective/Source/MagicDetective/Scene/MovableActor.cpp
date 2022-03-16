@@ -27,6 +27,9 @@ USceneComponent *AMovableActor::GetAttachedPivotComponent() const
 
 void AMovableActor::Interact_Implementation()
 {
+	if (!bIsInteractable)
+		return;
+
 	Super::Interact_Implementation();
 
 	// Pick up and hold this object.
@@ -44,6 +47,9 @@ void AMovableActor::Interact_Implementation()
 
 void AMovableActor::LongPressedInteract_Implementation()
 {
+	if (!bIsInteractable)
+		return;
+
 	Super::LongPressedInteract_Implementation();
 
 	// Collect into pack.	
@@ -52,9 +58,12 @@ void AMovableActor::LongPressedInteract_Implementation()
 
 void AMovableActor::ShowInteractionHint()
 {
-	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
-	HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
+	if (bIsInteractable)
+	{
+		APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+		HUD->ShowInteractionHint(EInteractionHintMode::Interact, InteractionName);
+	}
 }
 
 void AMovableActor::HideInteractionHint()
@@ -131,4 +140,5 @@ void AMovableActor::Place()
 
 void AMovableActor::OnAllTriggerPaired_Implementation()
 {
+	bIsInteractable = false;
 }

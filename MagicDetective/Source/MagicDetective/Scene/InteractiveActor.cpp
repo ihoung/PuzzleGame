@@ -5,7 +5,7 @@
 
 AInteractiveActor::AInteractiveActor()
 {
-
+	bIsInteractable = true;
 }
 
 void AInteractiveActor::Interact_Implementation()
@@ -32,5 +32,15 @@ void AInteractiveActor::ShowInteractionHint()
 void AInteractiveActor::HideInteractionHint()
 {
 
+}
+
+void AInteractiveActor::SetInteractable(bool IsInteractable)
+{
+	bIsInteractable = IsInteractable;
+}
+
+bool AInteractiveActor::GetInteractable() const
+{
+	return bIsInteractable;
 }
 

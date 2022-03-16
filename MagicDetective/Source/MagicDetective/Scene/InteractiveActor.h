@@ -26,4 +26,13 @@ public:
 	virtual void ShowInteractionHint();
 
 	virtual void HideInteractionHint();
+
+	UFUNCTION(BlueprintCallable)
+	void SetInteractable(bool IsInteractable);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetInteractable() const;
+
+protected:
+	bool bIsInteractable;
 };

@@ -54,7 +54,7 @@ void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 
 void AMainSceneHUD::HideInteractionHint()
 {
-	if (InteractionHint)
+	if (InteractionHint && InteractionHint->IsInViewport())
 	{
 		InteractionHint->RemoveFromViewport();
 	}
