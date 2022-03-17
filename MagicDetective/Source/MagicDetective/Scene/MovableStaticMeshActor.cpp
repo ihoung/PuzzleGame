@@ -64,7 +64,7 @@ void AMovableStaticMeshActor::LongPressedInteract_Implementation()
 	CollectToPack();
 }
 
-void AMovableStaticMeshActor::ShowInteractionHint()
+void AMovableStaticMeshActor::ShowInteractionHint_Implementation()
 {
 	if (bIsInteractable)
 	{
@@ -74,7 +74,7 @@ void AMovableStaticMeshActor::ShowInteractionHint()
 	}
 }
 
-void AMovableStaticMeshActor::HideInteractionHint()
+void AMovableStaticMeshActor::HideInteractionHint_Implementation()
 {
 	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();

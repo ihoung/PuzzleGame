@@ -35,10 +35,10 @@ public:
 	virtual void LongPressedInteract_Implementation() override;
 
 	UFUNCTION()
-	virtual void ShowInteractionHint() override;
+	virtual void ShowInteractionHint_Implementation() override;
 
 	UFUNCTION()
-	virtual void HideInteractionHint() override;
+	virtual void HideInteractionHint_Implementation() override;
 
 	UFUNCTION(BlueprintCallable)
 	class UStaticMeshComponent *GetStaticMeshComponent() const;

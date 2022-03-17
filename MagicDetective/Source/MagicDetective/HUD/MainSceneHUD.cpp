@@ -46,6 +46,9 @@ void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 		case EInteractionHintMode::HoldAndTrigger:
 			InteractionHint->HoldAndTriggerMode();
 			break;
+		case EInteractionHintMode::Focus:
+			InteractionHint->FocusMode();
+			break;
 		default:
 			break;
 		}

@@ -12,6 +12,7 @@ void UInteractionHintWidget::InteractMode(FString info)
 	TextBlock_DropHint->SetVisibility(ESlateVisibility::Collapsed);
 	TextBlock_CollectHint->SetVisibility(ESlateVisibility::Collapsed);
 	TextBlock_PlaceHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_Exit->SetVisibility(ESlateVisibility::Hidden);
 
 	if (!info.IsEmpty())
 	{
@@ -25,6 +26,7 @@ void UInteractionHintWidget::HoldMode()
 	TextBlock_DropHint->SetVisibility(ESlateVisibility::Visible);
 	TextBlock_CollectHint->SetVisibility(ESlateVisibility::Visible);
 	TextBlock_PlaceHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_Exit->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInteractionHintWidget::HoldAndTriggerMode()
@@ -33,4 +35,16 @@ void UInteractionHintWidget::HoldAndTriggerMode()
 	TextBlock_DropHint->SetVisibility(ESlateVisibility::Visible);
 	TextBlock_CollectHint->SetVisibility(ESlateVisibility::Visible);
 	TextBlock_PlaceHint->SetVisibility(ESlateVisibility::Visible);
+	TextBlock_Exit->SetVisibility(ESlateVisibility::Hidden);
 }
+
+void UInteractionHintWidget::FocusMode()
+{
+	HorizontalBox_InteractionHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_DropHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_CollectHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_PlaceHint->SetVisibility(ESlateVisibility::Collapsed);
+	TextBlock_Exit->SetVisibility(ESlateVisibility::Visible);
+
+}
+

@@ -55,6 +55,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float LongPressedTime;
 
+	UFUNCTION(BlueprintCallable)
+	void SetDetectionHitActive(bool NewActive);
 
 private:
 	class AInteractiveActor *currentInteractiveActor;

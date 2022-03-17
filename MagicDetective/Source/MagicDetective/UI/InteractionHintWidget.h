@@ -15,7 +15,8 @@ enum class EInteractionHintMode : uint8
 {
 	Interact,
 	Hold,
-	HoldAndTrigger
+	HoldAndTrigger,
+	Focus
 };
 
 UCLASS()
@@ -25,19 +26,22 @@ class MAGICDETECTIVE_API UInteractionHintWidget : public UUserWidget
 	
 private:
 	UPROPERTY(meta = (BindWidget))
-		class UHorizontalBox *HorizontalBox_InteractionHint;
+	class UHorizontalBox *HorizontalBox_InteractionHint;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock *TextBlock_InteractionHint;
+	class UTextBlock *TextBlock_InteractionHint;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock *TextBlock_DropHint;
+	class UTextBlock *TextBlock_DropHint;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock *TextBlock_CollectHint;
+	class UTextBlock *TextBlock_CollectHint;
 
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock *TextBlock_PlaceHint;
+	class UTextBlock *TextBlock_PlaceHint;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock *TextBlock_Exit;
 
 public:
 	UFUNCTION()
@@ -49,4 +53,6 @@ public:
 	UFUNCTION()
 	void HoldAndTriggerMode();
 
+	UFUNCTION()
+	void FocusMode();
 };

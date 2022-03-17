@@ -151,6 +151,11 @@ void AFirstPersonCharacter::InteractionKeyReleased()
 	isInteractionKeyPressed = false;
 }
 
+void AFirstPersonCharacter::SetDetectionHitActive(bool NewActive)
+{
+	bCanDetectHit = NewActive;
+}
+
 void AFirstPersonCharacter::DetectHit()
 {
 	FHitResult outHit;
