@@ -116,6 +116,19 @@ void AFirstPersonCharacter::MoveForward(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorForwardVector(), Value);
+
+		if (!bIsMoving)
+		{
+			PlayMovementSound();
+			bIsMoving = true;
+			return;
+		}
+	}
+
+	if (bIsMoving)
+	{
+		StopMovementSound();
+		bIsMoving = false;
 	}
 }
 
@@ -125,6 +138,19 @@ void AFirstPersonCharacter::MoveRight(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
+
+		if (!bIsMoving)
+		{
+			PlayMovementSound();
+			bIsMoving = true;
+			return;
+		}
+	}
+
+	if (bIsMoving)
+	{
+		StopMovementSound();
+		bIsMoving = false;
 	}
 }
 

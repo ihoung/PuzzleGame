@@ -44,6 +44,12 @@ protected:
 	/** Handles stafing movement, left and right */
 	void MoveRight(float Val);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayMovementSound();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopMovementSound();
+
 	void InteractionKeyPressed();
 
 	void InteractionKeyReleased();
@@ -86,4 +92,6 @@ private:
 	void DetachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
 	FDelegateHandle DetachDelegateHandle;
+
+	bool bIsMoving;
 };
