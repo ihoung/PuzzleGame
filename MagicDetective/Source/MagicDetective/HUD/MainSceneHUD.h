@@ -45,12 +45,16 @@ private:
 	UPROPERTY()
 	class UCaptionWidget *Caption;
 
+	UPROPERTY()
 	class UPackWidget *Pack;
 
+	UPROPERTY()
 	class UItemDisplayWidget *ItemDisplay;
 
+	UPROPERTY()
 	class USceneMenuWidget *SceneMenu;
 
+	UPROPERTY()
 	TArray<class UUserWidget *> PageStack;
 
 public:

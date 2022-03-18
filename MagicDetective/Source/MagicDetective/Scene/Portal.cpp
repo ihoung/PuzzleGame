@@ -54,6 +54,8 @@ void APortal::PostActorCreated()
 		PortalEffectComponent->SetVariableMaterial(MaterialParameterName, DynamicPortalMaterial);
 	}
 
+	SetPortalActive(false);
+
 	OnActorBeginOverlap.AddDynamic(this, &APortal::BeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
 }

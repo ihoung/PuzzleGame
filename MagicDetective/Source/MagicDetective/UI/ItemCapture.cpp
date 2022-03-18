@@ -65,7 +65,7 @@ void AItemCapture::DisplayItem(TSubclassOf<AMovableStaticMeshActor> ItemBlueprin
 
 void AItemCapture::RotateItem(float ScreenOffset_X, float ScreenOffset_Y)
 {
-	FRotator rot = { 0.f, -ScreenOffset_Y, ScreenOffset_X };
+	FRotator rot = { ScreenOffset_Y, -ScreenOffset_X, 0.f };
 	DisplayedItem->AddActorWorldRotation(UKismetMathLibrary::TransformRotation(SceneCaptureComponent->GetComponentTransform(), rot));
 }
 
@@ -73,7 +73,7 @@ void AItemCapture::ZoomItem(float WheelDelta)
 {
 	float preFOV = SceneCaptureComponent->FOVAngle - WheelDelta;
 
-	if (preFOV >= 40 && preFOV <= 140)
+	if (preFOV >= 40 && preFOV <= 160)
 		SceneCaptureComponent->FOVAngle = preFOV;
 }
 
