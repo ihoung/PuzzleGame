@@ -21,11 +21,8 @@ public :
 protected:
 	virtual void NativeOnInitialized() override;
 
-	UFUNCTION(BlueprintCallable)
-	void OpenNewLevel();
-
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnStartGame();
+	void StartGame();
 
 private:
 	UPROPERTY(meta = (BindWidget))

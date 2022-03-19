@@ -9,7 +9,4 @@
 
 void AMainMenuLevelScriptActor::BeginPlay()
 {
-	APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AMainMenuHUD *HUD = PC->GetHUD<AMainMenuHUD>();
-	HUD->ShowMainMenu();
 }

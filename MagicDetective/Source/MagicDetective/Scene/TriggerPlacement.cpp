@@ -87,7 +87,7 @@ void ATriggerPlacement::PlaceMovableActor(AMovableStaticMeshActor *TargetActor)
 		// Attach to placement
 		TargetActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
 		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::KeepWorldTransform);
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(TargetActor->GetAttachedPivotComponent()->GetComponentTransform(), TargetActor->GetActorTransform());
+		FTransform relativeTransform = UKismetMathLibrary::MakeRelativeTransform(TargetActor->GetActorTransform(), TargetActor->GetAttachedPivotComponent()->GetComponentTransform());
 		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, PlacementComponent->GetComponentTransform());
 		TargetActor->SetActorTransform(composedTransform);
 
