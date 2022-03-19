@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category = "Paired Actor")
 	TSubclassOf<class AMovableStaticMeshActor> PairedActor;
 
+	UPROPERTY(EditAnywhere, Category = "Paired Actor")
+	FName UnpairedCaptionID;
+
 	UFUNCTION()
 	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
 

@@ -42,7 +42,7 @@ void APortal::PostActorCreated()
 {
 	Super::PostActorCreated();
 
-	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(GetWorld(), 1280, 720);
+	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(GetWorld(), 720, 405);
 	RenderTarget->AddressX = TA_Wrap;
 	RenderTarget->AddressY = TA_Wrap;
 
@@ -60,6 +60,7 @@ void APortal::PostActorCreated()
 	OnActorEndOverlap.AddDynamic(this, &APortal::EndOverlap);
 }
 
+#if WITH_EDITOR
 void APortal::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent)
 {
 	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
@@ -81,6 +82,7 @@ void APortal::PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+#endif
 
 // Called when the game starts or when spawned
 void APortal::BeginPlay()
@@ -152,7 +154,7 @@ void APortal::UpdateSceneCapture()
 	if (LinkedPortal)
 	{
 		FTransform playerCameraTransform = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetTransformComponent()->GetComponentTransform();
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(playerCameraTransform, BackwardSceneComponent->GetComponentTransform());
+		FTransform relativeTransform = UKismetMathLibrary::MakeRelativeTransform(BackwardSceneComponent->GetComponentTransform(), playerCameraTransform);
 		LinkedPortal->SceneCaptureComponent->SetRelativeLocationAndRotation(relativeTransform.GetLocation(), relativeTransform.GetRotation());
 
 		// Set near clipping plane of scene capture
@@ -194,7 +196,7 @@ void APortal::TransportPlayer(class AFirstPersonCharacter *Player, const FVector
 
 		// Get location and rotation after tranported
 		FTransform postPlayerTransform = UKismetMathLibrary::MakeTransform(PostPlayerLocation, Player->GetActorRotation(), Player->GetActorScale3D());
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(BackwardSceneComponent->GetComponentTransform(), postPlayerTransform);
+		FTransform relativeTransform = UKismetMathLibrary::MakeRelativeTransform(postPlayerTransform, BackwardSceneComponent->GetComponentTransform());
 		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, LinkedPortal->GetTransform());
 		Player->SetActorLocation(composedTransform.GetLocation());
 		FRotator rotator = composedTransform.GetRotation().Rotator();

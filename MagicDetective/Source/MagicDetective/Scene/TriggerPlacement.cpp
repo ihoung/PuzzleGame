@@ -9,6 +9,7 @@
 #include "MovableStaticMeshActor.h"
 #include "MainSceneHUD.h"
 #include "PackManager.h"
+#include "DataTableManager.h"
 
 
 ATriggerPlacement::ATriggerPlacement() :Super()
@@ -163,7 +164,21 @@ void ATriggerPlacement::HideInteractionHint()
 void ATriggerPlacement::PlaceFromPack()
 {
 	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
-	TSubclassOf<AMovableStaticMeshActor> SelectedProperty = PackManager->GetSelectedProperty(true);
+	TSubclassOf<AMovableStaticMeshActor> SelectedProperty = PackManager->GetSelectedProperty();
+
+	if (!SelectedProperty->StaticClass()->IsChildOf(PlaceableActor->StaticClass()))
+	{
+		FCaptionData captionData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetCaption(UnpairedCaptionID);
+		FString captionContent = captionData.TextContent;
+
+		APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+		HUD->ShowCaption(captionContent);
+		return;
+	}
+
+	SelectedProperty = PackManager->GetSelectedProperty(true);
+
 	AMovableStaticMeshActor *SpawnedActor = GetWorld()->SpawnActor<AMovableStaticMeshActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
 	if (SpawnedActor)
 	{

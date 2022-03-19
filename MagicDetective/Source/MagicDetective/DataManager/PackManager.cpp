@@ -31,7 +31,9 @@ void UPackManager::AddToPack(const FName &Name)
 
 void UPackManager::RemoveFromPack(const FName &Name)
 {
-	PropertyStack.Remove(Name);
+	FGameplayPropertyData ItemData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
+	FGameplayPropertyInfo ItemInfo = ParseItemInfo(Name, ItemData);
+	OnRemoveItem.Broadcast(ItemInfo);
 
 	if (CurrentSelectedProperty == Name)
 	{
@@ -39,9 +41,7 @@ void UPackManager::RemoveFromPack(const FName &Name)
 		OnSelectItem.Broadcast(ParseItemInfo("", FGameplayPropertyData()));
 	}
 
-	FGameplayPropertyData ItemData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
-	FGameplayPropertyInfo ItemInfo = ParseItemInfo(Name, ItemData);
-	OnRemoveItem.Broadcast(ItemInfo);
+	PropertyStack.Remove(Name);
 }
 
 void UPackManager::SelectProperty(const FName &ID)
