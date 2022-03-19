@@ -77,7 +77,7 @@ TSubclassOf<class AMovableStaticMeshActor> UPackManager::GetPropertyByName(const
 
 FGameplayPropertyInfo UPackManager::ParseItemInfo(const FName &ID, const FGameplayPropertyData &ItemData)
 {
-	UTexture2D *IconTexture = Cast<UTexture2D>(ItemData.Icon.Get());
+	UTexture2D *IconTexture = Cast<UTexture2D>(ItemData.Icon);
 	FGameplayPropertyInfo ItemInfo;
 	ItemInfo.ID = ID;
 	ItemInfo.Icon = IconTexture;

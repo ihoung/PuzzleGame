@@ -24,7 +24,7 @@ struct FGameplayPropertyData : public FTableRowBase
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TAssetPtr<class UTexture> Icon;
+	class UTexture *Icon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<class AMovableStaticMeshActor> BlueprintActor;
