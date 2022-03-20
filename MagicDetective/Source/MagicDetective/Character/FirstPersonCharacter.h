@@ -55,6 +55,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float LongPressedTime;
 
+	UFUNCTION(BlueprintCallable)
+	void SetDetectionHitActive(bool NewActive);
 
 private:
 	class AInteractiveActor *currentInteractiveActor;
@@ -79,9 +81,11 @@ private:
 	void LongPressedInteract();
 	/* Interaction Input End */
 
-	void AttachMovableActor(class AMovableActor *TargetActor);
+	void AttachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
-	void DetachMovableActor(class AMovableActor *TargetActor);
+	void DetachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
 	FDelegateHandle DetachDelegateHandle;
+
+	bool bIsMoving;
 };

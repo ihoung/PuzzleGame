@@ -4,7 +4,7 @@
 #include "DataTableManager.h"
 #include "Engine/Texture.h"
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 
 
 void UDataTableManager::Initialize(FSubsystemCollectionBase &Collection)

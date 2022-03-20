@@ -23,7 +23,7 @@ public:
 	void HideMainMenu();
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> MainMenuClass;
 
 	// Keep a pointer to be able to hide it

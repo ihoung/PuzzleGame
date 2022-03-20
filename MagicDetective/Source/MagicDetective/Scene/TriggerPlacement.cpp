@@ -6,9 +6,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/BoxComponent.h"
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 #include "MainSceneHUD.h"
 #include "PackManager.h"
+#include "DataTableManager.h"
 
 
 ATriggerPlacement::ATriggerPlacement() :Super()
@@ -30,7 +31,7 @@ void ATriggerPlacement::BeginPlay()
 	GetAttachedActors(childActors);
 	if (childActors.Num() != 0)
 	{
-		AttachedChildActor = Cast<AMovableActor>(childActors[0]);
+		AttachedChildActor = Cast<AMovableStaticMeshActor>(childActors[0]);
 		//SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 		PlaceMovableActor(AttachedChildActor);
 	}
@@ -42,7 +43,7 @@ void ATriggerPlacement::BeginOverlap(AActor *overlappedActor, AActor *otherActor
 	{
 		if (otherActor->IsA(PlaceableActor))
 		{
-			AMovableActor * DetectedActor = Cast<AMovableActor>(otherActor);
+			AMovableStaticMeshActor * DetectedActor = Cast<AMovableStaticMeshActor>(otherActor);
 			DetectedActor->bDetectTrigger = true;
 
 			DetectedActor->PlaceDelegate.BindUObject(this, &ATriggerPlacement::PlaceMovableActor);
@@ -62,7 +63,7 @@ void ATriggerPlacement::EndOverlap(AActor *overlappedActor, AActor *otherActor)
 	{
 		if (otherActor->IsA(PlaceableActor))
 		{
-			AMovableActor *DetectedActor = Cast<AMovableActor>(otherActor);
+			AMovableStaticMeshActor *DetectedActor = Cast<AMovableStaticMeshActor>(otherActor);
 			DetectedActor->bDetectTrigger = false;
 
 			DetectedActor->PlaceDelegate.Unbind();
@@ -76,7 +77,7 @@ void ATriggerPlacement::EndOverlap(AActor *overlappedActor, AActor *otherActor)
 
 }
 
-void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
+void ATriggerPlacement::PlaceMovableActor(AMovableStaticMeshActor *TargetActor)
 {
 	if (TargetActor)
 	{
@@ -84,8 +85,9 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 		SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
 		// Attach to placement
+		TargetActor->GetStaticMeshComponent()->SetSimulatePhysics(false);
 		TargetActor->AttachToComponent(PlacementComponent, FAttachmentTransformRules::KeepWorldTransform);
-		FTransform relativeTransform = UKismetMathLibrary::ConvertTransformToRelative(TargetActor->GetAttachedPivotComponent()->GetComponentTransform(), TargetActor->GetActorTransform());
+		FTransform relativeTransform = UKismetMathLibrary::MakeRelativeTransform(TargetActor->GetActorTransform(), TargetActor->GetAttachedPivotComponent()->GetComponentTransform());
 		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, PlacementComponent->GetComponentTransform());
 		TargetActor->SetActorTransform(composedTransform);
 
@@ -106,7 +108,7 @@ void ATriggerPlacement::PlaceMovableActor(AMovableActor *TargetActor)
 	}
 }
 
-void ATriggerPlacement::DetachMovableActor(AMovableActor *TargetActor)
+void ATriggerPlacement::DetachMovableActor(AMovableStaticMeshActor *TargetActor)
 {
 	if (TargetActor)
 	{
@@ -162,8 +164,22 @@ void ATriggerPlacement::HideInteractionHint()
 void ATriggerPlacement::PlaceFromPack()
 {
 	UPackManager *PackManager = GetGameInstance()->GetSubsystem<UPackManager>();
-	TSubclassOf<AMovableActor> SelectedProperty = PackManager->GetSelectedProperty(true);
-	AMovableActor *SpawnedActor = GetWorld()->SpawnActor<AMovableActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
+	TSubclassOf<AMovableStaticMeshActor> SelectedProperty = PackManager->GetSelectedProperty();
+
+	if (!SelectedProperty->StaticClass()->IsChildOf(PlaceableActor->StaticClass()))
+	{
+		FCaptionData captionData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetCaption(UnpairedCaptionID);
+		FString captionContent = captionData.TextContent;
+
+		APlayerController *PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		AMainSceneHUD *HUD = PC->GetHUD<AMainSceneHUD>();
+		HUD->ShowCaption(captionContent);
+		return;
+	}
+
+	SelectedProperty = PackManager->GetSelectedProperty(true);
+
+	AMovableStaticMeshActor *SpawnedActor = GetWorld()->SpawnActor<AMovableStaticMeshActor>(SelectedProperty, PlacementComponent->GetComponentTransform());
 	if (SpawnedActor)
 	{
 		SpawnedActor->GetStaticMeshComponent()->SetSimulatePhysics(false);

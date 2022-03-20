@@ -5,8 +5,8 @@
 #include "MainSceneHUD.h"
 #include "FirstPersonCharacter.h"
 #include "PackManager.h"
-#include "MovableActor.h"
- 
+#include "MovableStaticMeshActor.h"
+
 
 AMainScenePlayerController::AMainScenePlayerController(const FObjectInitializer &ObjectInitializer) :Super(ObjectInitializer)
 {
@@ -31,6 +31,9 @@ void AMainScenePlayerController::SetupInputComponent()
 
     InputComponent->BindAction("Exit", IE_Pressed, this, &AMainScenePlayerController::HideWidgetKeyPressed);
     InputComponent->BindAction("Exit", IE_Released, this, &AMainScenePlayerController::HideWidgetKeyReleased);
+
+    InputComponent->BindAction("OpenMenu", IE_Pressed, this, &AMainScenePlayerController::OpenSceneMenuKeyPressed);
+    InputComponent->BindAction("OpenMenu", IE_Released, this, &AMainScenePlayerController::OpenSceneMenuKeyReleased);
 }
 
 void AMainScenePlayerController::OpenPackKeyPressed()
@@ -56,7 +59,7 @@ void AMainScenePlayerController::ShowItemDisplayKeyReleased()
 {
     if (bIsItemDisplayKeyPressed)
     {
-        TSubclassOf<AMovableActor> SelectedItem = GetGameInstance()->GetSubsystem<UPackManager>()->GetSelectedProperty();
+        TSubclassOf<AMovableStaticMeshActor> SelectedItem = GetGameInstance()->GetSubsystem<UPackManager>()->GetSelectedProperty();
         if (SelectedItem)
         {
             GetHUD<AMainSceneHUD>()->ShowItemDisplay(SelectedItem);
@@ -89,4 +92,18 @@ void AMainScenePlayerController::HideMouseCursor()
 {
     bShowMouseCursor = false;
     GetPawn<AFirstPersonCharacter>()->EnableInput(this);
+}
+
+void AMainScenePlayerController::OpenSceneMenuKeyPressed()
+{
+    bOpenSceneMenuKeyPressed = true;
+}
+
+void AMainScenePlayerController::OpenSceneMenuKeyReleased()
+{
+    if (bOpenSceneMenuKeyPressed)
+    {
+        GetHUD<AMainSceneHUD>()->ShowMenu();
+        bOpenSceneMenuKeyPressed = false;
+    }
 }

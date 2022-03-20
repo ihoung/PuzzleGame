@@ -31,7 +31,9 @@ void UPackManager::AddToPack(const FName &Name)
 
 void UPackManager::RemoveFromPack(const FName &Name)
 {
-	PropertyStack.Remove(Name);
+	FGameplayPropertyData ItemData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
+	FGameplayPropertyInfo ItemInfo = ParseItemInfo(Name, ItemData);
+	OnRemoveItem.Broadcast(ItemInfo);
 
 	if (CurrentSelectedProperty == Name)
 	{
@@ -39,9 +41,7 @@ void UPackManager::RemoveFromPack(const FName &Name)
 		OnSelectItem.Broadcast(ParseItemInfo("", FGameplayPropertyData()));
 	}
 
-	FGameplayPropertyData ItemData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
-	FGameplayPropertyInfo ItemInfo = ParseItemInfo(Name, ItemData);
-	OnRemoveItem.Broadcast(ItemInfo);
+	PropertyStack.Remove(Name);
 }
 
 void UPackManager::SelectProperty(const FName &ID)
@@ -53,7 +53,7 @@ void UPackManager::SelectProperty(const FName &ID)
 	OnSelectItem.Broadcast(ItemInfo);
 }
 
-TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPack)
+TSubclassOf<class AMovableStaticMeshActor> UPackManager::GetSelectedProperty(bool bRemoveFromPack)
 {
 	if (!CurrentSelectedProperty.IsNone())
 	{
@@ -69,7 +69,7 @@ TSubclassOf<AMovableActor> UPackManager::GetSelectedProperty(bool bRemoveFromPac
 	return nullptr;
 }
 
-TSubclassOf<class AMovableActor> UPackManager::GetPropertyByName(const FName &Name)
+TSubclassOf<class AMovableStaticMeshActor> UPackManager::GetPropertyByName(const FName &Name)
 {
 	FGameplayPropertyData PropertyData = GetGameInstance()->GetSubsystem<UDataTableManager>()->GetGameplayProperty(Name);
 	return PropertyData.BlueprintActor;
@@ -77,7 +77,7 @@ TSubclassOf<class AMovableActor> UPackManager::GetPropertyByName(const FName &Na
 
 FGameplayPropertyInfo UPackManager::ParseItemInfo(const FName &ID, const FGameplayPropertyData &ItemData)
 {
-	UTexture2D *IconTexture = Cast<UTexture2D>(ItemData.Icon.Get());
+	UTexture2D *IconTexture = Cast<UTexture2D>(ItemData.Icon);
 	FGameplayPropertyInfo ItemInfo;
 	ItemInfo.ID = ID;
 	ItemInfo.Icon = IconTexture;

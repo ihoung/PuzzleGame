@@ -41,4 +41,9 @@ private:
     bool bHideWidgetKeyPressed;
     void HideWidgetKeyPressed();
     void HideWidgetKeyReleased();
+
+    // Open scene menu
+    bool bOpenSceneMenuKeyPressed;
+    void OpenSceneMenuKeyPressed();
+    void OpenSceneMenuKeyReleased();
 };

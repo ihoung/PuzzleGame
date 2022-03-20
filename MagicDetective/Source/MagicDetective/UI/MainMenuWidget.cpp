@@ -16,7 +16,7 @@ void UMainMenuWidget::NativeOnInitialized()
 
 void UMainMenuWidget::OnStartGameBtnClicked()
 {
-	OnStartGame();
+	StartGame();
 }
 
 void UMainMenuWidget::OnQuitBtnClicked()
@@ -30,9 +30,4 @@ void UMainMenuWidget::OnQuitBtnClicked()
 	//playerCtrler->ConsoleCommand("quit");
 
 	UKismetSystemLibrary::QuitGame(world, playerCtrler, EQuitPreference::Quit, false);
-}
-
-void UMainMenuWidget::OpenNewLevel()
-{
-	UGameplayStatics::OpenLevel(this, MainLevel);
 }

@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class MAGICDETECTIVE_API AInteractiveActor : public AStaticMeshActor
+class MAGICDETECTIVE_API AInteractiveActor : public AActor
 {
 	GENERATED_BODY()
 
@@ -23,9 +23,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void LongPressedInteract();
 
-	virtual void ShowInteractionHint();
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowInteractionHint();
 
-	virtual void HideInteractionHint();
+	UFUNCTION(BlueprintNativeEvent)
+	void HideInteractionHint();
 
 	UFUNCTION(BlueprintCallable)
 	void SetInteractable(bool IsInteractable);

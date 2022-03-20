@@ -20,7 +20,7 @@ class MAGICDETECTIVE_API ATriggerPlacement : public ATriggerBox
 	class USceneComponent *PlacementComponent;
 
 	bool bIsChildAttached;
-	class AMovableActor *AttachedChildActor;
+	class AMovableStaticMeshActor *AttachedChildActor;
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,10 +50,13 @@ protected:
 	FString InteractionName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Paired Actor")
-	TSubclassOf<class AMovableActor> PlaceableActor;
+	TSubclassOf<class AMovableStaticMeshActor> PlaceableActor;
 
 	UPROPERTY(EditInstanceOnly, Category = "Paired Actor")
-	TSubclassOf<class AMovableActor> PairedActor;
+	TSubclassOf<class AMovableStaticMeshActor> PairedActor;
+
+	UPROPERTY(EditAnywhere, Category = "Paired Actor")
+	FName UnpairedCaptionID;
 
 	UFUNCTION()
 	void BeginOverlap(class AActor *overlappedActor, class AActor *otherActor);
@@ -63,10 +66,10 @@ protected:
 
 private:
 	UFUNCTION()
-	void PlaceMovableActor(class AMovableActor *TargetActor);
+	void PlaceMovableActor(class AMovableStaticMeshActor *TargetActor);
 
 	UFUNCTION()
-	void DetachMovableActor(class AMovableActor *TargetActor);
+	void DetachMovableActor(class AMovableStaticMeshActor *TargetActor);
 
 	FDelegateHandle DetachDelegateHandle;
 

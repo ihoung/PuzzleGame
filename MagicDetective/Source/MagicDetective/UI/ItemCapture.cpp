@@ -6,7 +6,7 @@
 #include "Kismet/KismetRenderingLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 
 
 // Sets default values
@@ -42,10 +42,10 @@ void AItemCapture::Tick(float DeltaTime)
 
 }
 
-void AItemCapture::DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint)
+void AItemCapture::DisplayItem(TSubclassOf<AMovableStaticMeshActor> ItemBlueprint)
 {
 	// Spawn new item
-	DisplayedItem = GetWorld()->SpawnActor<AMovableActor>(ItemBlueprint, ItemPlacement->GetComponentLocation(), { 0.f,0.f,0.f });
+	DisplayedItem = GetWorld()->SpawnActor<AMovableStaticMeshActor>(ItemBlueprint, ItemPlacement->GetComponentLocation(), { 0.f,0.f,0.f });
 	//InteractivePivot = Cast<USceneComponent>(DisplayedItem->GetDefaultSubobjectByName(TEXT("InteractivePivot")));
 	//if (InteractivePivot)
 	//{
@@ -65,7 +65,7 @@ void AItemCapture::DisplayItem(TSubclassOf<class AMovableActor> ItemBlueprint)
 
 void AItemCapture::RotateItem(float ScreenOffset_X, float ScreenOffset_Y)
 {
-	FRotator rot = { 0.f, -ScreenOffset_Y, ScreenOffset_X };
+	FRotator rot = { ScreenOffset_Y, -ScreenOffset_X, 0.f };
 	DisplayedItem->AddActorWorldRotation(UKismetMathLibrary::TransformRotation(SceneCaptureComponent->GetComponentTransform(), rot));
 }
 
@@ -73,7 +73,7 @@ void AItemCapture::ZoomItem(float WheelDelta)
 {
 	float preFOV = SceneCaptureComponent->FOVAngle - WheelDelta;
 
-	if (preFOV >= 40 && preFOV <= 140)
+	if (preFOV >= 40 && preFOV <= 160)
 		SceneCaptureComponent->FOVAngle = preFOV;
 }
 

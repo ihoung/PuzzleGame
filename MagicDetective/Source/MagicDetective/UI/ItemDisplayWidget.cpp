@@ -6,7 +6,7 @@
 #include "Components/Border.h"
 #include "Engine/TextureRenderTarget2D.h"
 
-#include "MovableActor.h"
+#include "MovableStaticMeshActor.h"
 #include "ItemCapture.h"
 
 
@@ -79,7 +79,7 @@ FReply UItemDisplayWidget::NativeOnMouseWheel(const FGeometry &InGeometry, const
 	return FReply::Handled();
 }
 
-void UItemDisplayWidget::ShowItem(TSubclassOf<AMovableActor> ItemBlueprint)
+void UItemDisplayWidget::ShowItem(TSubclassOf<AMovableStaticMeshActor> ItemBlueprint)
 {
 	ItemCaptureInstance->DisplayItem(ItemBlueprint);
 }

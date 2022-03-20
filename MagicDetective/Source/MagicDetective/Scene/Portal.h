@@ -40,7 +40,9 @@ public:
 protected:
 	virtual void PostActorCreated() override;
 
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override;
+#endif
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,6 +64,12 @@ private:
 public:
 	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
 	APortal *LinkedPortal;
+
+	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
+	bool ShouldRealtimeRender;
+
+	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
+	float DistanceOfStartTransport;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Material")
 	class UMaterialInterface *DefaultPortalMaterialAsset;

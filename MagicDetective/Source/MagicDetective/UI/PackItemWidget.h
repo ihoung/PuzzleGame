@@ -36,6 +36,7 @@ public:
 	FItemSelectedDelegate OnItemSelected;
 
 private:
+	UPROPERTY()
 	FName ItemID;
 
 	UFUNCTION()

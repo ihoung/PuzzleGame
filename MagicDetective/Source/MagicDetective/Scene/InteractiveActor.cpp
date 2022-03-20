@@ -24,12 +24,12 @@ void AInteractiveActor::LongPressedInteract_Implementation()
 	//}
 }
 
-void AInteractiveActor::ShowInteractionHint()
+void AInteractiveActor::ShowInteractionHint_Implementation()
 {
 
 }
 
-void AInteractiveActor::HideInteractionHint()
+void AInteractiveActor::HideInteractionHint_Implementation()
 {
 
 }

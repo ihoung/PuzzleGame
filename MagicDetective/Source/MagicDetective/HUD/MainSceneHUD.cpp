@@ -8,6 +8,7 @@
 #include "CaptionWidget.h"
 #include "PackWidget.h"
 #include "ItemDisplayWidget.h"
+#include "SceneMenuWidget.h"
 #include "MainScenePlayerController.h"
 
 
@@ -45,6 +46,9 @@ void AMainSceneHUD::ShowInteractionHint(EInteractionHintMode Mode, FString info)
 			break;
 		case EInteractionHintMode::HoldAndTrigger:
 			InteractionHint->HoldAndTriggerMode();
+			break;
+		case EInteractionHintMode::Focus:
+			InteractionHint->FocusMode();
 			break;
 		default:
 			break;
@@ -118,7 +122,7 @@ void AMainSceneHUD::OpenOrHidePack()
 	}
 }
 
-void AMainSceneHUD::ShowItemDisplay(TSubclassOf<AMovableActor> ItemBlueprint)
+void AMainSceneHUD::ShowItemDisplay(TSubclassOf<class AMovableStaticMeshActor> ItemBlueprint)
 {
 	if (ItemDisplay == nullptr)
 	{
@@ -157,5 +161,51 @@ void AMainSceneHUD::HideItemDisplay()
 	if (ItemDisplay && ItemDisplay->IsInViewport())
 	{
 		ItemDisplay->RemoveFromViewport();
+	}
+}
+
+void AMainSceneHUD::ShowMenu()
+{
+	if (SceneMenu == nullptr)
+	{
+		SceneMenu = CreateWidget<USceneMenuWidget>(GetWorld(), SceneMenuWidget);
+		if (SceneMenu)
+		{
+			SceneMenu->OnHideSceneMenu.BindUObject(this, &AMainSceneHUD::HideMenu);
+		}
+	}
+
+	if (SceneMenu)
+	{
+		if (!SceneMenu->IsInViewport())
+		{
+			int32 ZOrder = 0;
+			if (WidgetZOrder.Contains(SceneMenuWidget))
+			{
+				ZOrder = WidgetZOrder[SceneMenuWidget];
+			}
+			SceneMenu->AddToViewport(ZOrder);
+		}
+
+		AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (playerController)
+		{
+			playerController->ShowMouseCursor();
+		}
+	}
+
+}
+
+void AMainSceneHUD::HideMenu()
+{
+	AMainScenePlayerController *playerController = Cast<AMainScenePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (playerController)
+	{
+		playerController->HideMouseCursor();
+	}
+
+	if (SceneMenu && SceneMenu->IsInViewport())
+	{
+		SceneMenu->RemoveFromViewport();
 	}
 }
