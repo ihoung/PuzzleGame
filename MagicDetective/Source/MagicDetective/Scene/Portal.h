@@ -65,6 +65,12 @@ public:
 	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
 	APortal *LinkedPortal;
 
+	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
+	bool ShouldRealtimeRender;
+
+	UPROPERTY(EditInstanceOnly, Category = "InstanceSetting")
+	float DistanceOfStartTransport;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Material")
 	class UMaterialInterface *DefaultPortalMaterialAsset;
 

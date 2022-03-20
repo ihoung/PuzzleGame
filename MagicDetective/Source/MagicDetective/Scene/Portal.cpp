@@ -36,6 +36,9 @@ APortal::APortal()
 
 	BackwardSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Backward"));
 	BackwardSceneComponent->SetupAttachment(DefaultSceneComponent);
+
+	ShouldRealtimeRender = false;
+	DistanceOfStartTransport = 10.f;
 }
 
 void APortal::PostActorCreated()
@@ -175,14 +178,27 @@ void APortal::UpdateSceneCapture()
 bool APortal::CheckIfPlayerShouldTransport(class AFirstPersonCharacter *Player, float DeltaTime, FVector &PostPlayerLocation)
 {
 	FVector playerLocation = Player->GetActorLocation();
-	FVector playerVelocity = Player->GetVelocity();
-	PostPlayerLocation = playerLocation + playerVelocity * DeltaTime;
-	FVector offset = GetActorLocation() - PostPlayerLocation;
 	FVector lastInputDirection = Player->GetLastMovementInputVector();
 
-	if (FVector::DotProduct(offset, GetActorForwardVector()) < 0 && FVector::DotProduct(lastInputDirection, GetActorForwardVector()) < 0)
+	if (ShouldRealtimeRender)
 	{
-		return true;
+		FVector offset = GetActorLocation() - playerLocation;
+
+		if (FVector::DotProduct(offset, GetActorForwardVector().GetSafeNormal()) <= DistanceOfStartTransport && FVector::DotProduct(lastInputDirection, GetActorForwardVector()) < 0)
+		{
+			return true;
+		}
+	}
+	else
+	{
+		FVector playerVelocity = Player->GetVelocity();
+		PostPlayerLocation = playerLocation + playerVelocity * DeltaTime;
+		FVector offset = GetActorLocation() - PostPlayerLocation;
+
+		if (FVector::DotProduct(offset, GetActorForwardVector()) < 0 && FVector::DotProduct(lastInputDirection, GetActorForwardVector()) < 0)
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -193,9 +209,21 @@ void APortal::TransportPlayer(class AFirstPersonCharacter *Player, const FVector
 	if (LinkedPortal)
 	{
 		auto relativeVelocity = UKismetMathLibrary::InverseTransformDirection(Player->GetTransform(), Player->GetVelocity());
+		FTransform postPlayerTransform;
 
-		// Get location and rotation after tranported
-		FTransform postPlayerTransform = UKismetMathLibrary::MakeTransform(PostPlayerLocation, Player->GetActorRotation(), Player->GetActorScale3D());
+		if (ShouldRealtimeRender)
+		{
+			FVector pre_relativeLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), Player->GetActorLocation());
+			FVector post_Location = UKismetMathLibrary::TransformLocation(GetActorTransform(), FVector(-pre_relativeLocation.X, pre_relativeLocation.Y, pre_relativeLocation.Z));
+			postPlayerTransform = UKismetMathLibrary::MakeTransform(post_Location, Player->GetActorRotation(), Player->GetActorScale3D());
+		}
+		else
+		{
+
+			// Get location and rotation after tranported
+			postPlayerTransform = UKismetMathLibrary::MakeTransform(PostPlayerLocation, Player->GetActorRotation(), Player->GetActorScale3D());
+		}
+
 		FTransform relativeTransform = UKismetMathLibrary::MakeRelativeTransform(postPlayerTransform, BackwardSceneComponent->GetComponentTransform());
 		FTransform composedTransform = UKismetMathLibrary::ComposeTransforms(relativeTransform, LinkedPortal->GetTransform());
 		Player->SetActorLocation(composedTransform.GetLocation());
